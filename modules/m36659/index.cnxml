@@ -1,0 +1,230 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Cosine Generator Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36659</md:content-id>
+  <md:title>Cosine Generator Lab</md:title>
+  <md:abstract>This module is the recursive cosine generation lab.</md:abstract>
+  <md:uuid>0e0627a3-3112-4a36-a901-f27e964573c0</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1165029832918">
+      <title>Skills</title>
+      <para id="id1165031830379">In this laboratory you write a program that generates a cosine on the output of the D/A converter. After this laboratory you should:</para>
+      <list id="id1165044676266" list-type="bulleted">
+        <item>Be able to work with transfer functions and difference equations.</item>
+        <item>Be able to get a Visual Basic program to communicate with your DSP program on the DSK board.</item>
+      </list>
+    </section>
+    <section id="id1165042488469">
+      <title>Reading</title>
+      <list id="id1165035128108" list-type="bulleted">
+        <item>Chapter 4: Emmanuel Ifeachor and Barrie W. Jervis, <emphasis effect="italics">Digital Signal Processing: A Practical Approach</emphasis>, Pearson Education Limited, England, 2002.</item>
+        <item>Chapter 13 &amp; 14: Mrinal Mandal, Amir Asif, <emphasis effect="italics">Continuous and Discrete Time Signals and Systems</emphasis>, Cambridge University Press, 2007.</item>
+      </list>
+    </section>
+    <section id="id1165041921508">
+      <title>Description</title>
+      <para id="id1165053495349">In this lab you will be making a cosine function generator. This will require you to generate the values that go to the D/A converter in order to produce a cosine function. Since we are only concerned with the output, the input values will be ignored. You will need to determine the values of the cosine function necessary to produce it on the output.</para>
+    </section>
+    <section id="id1165036197942">
+      <title>Pre-Laboratory</title>
+      <list id="id1165040668889" list-type="bulleted">
+        <item>In order to generate a cosine function we will generate the impulse response of a system that has the impulse response</item>
+      </list>
+      <equation id="id1165028031509">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+          <m:semantics>
+            <m:mrow>
+              <m:mstyle fontsize="12pt">
+                <m:mrow>
+                  <m:mrow>
+                    <m:mi>h</m:mi>
+                    <m:mo stretchy="false">(</m:mo>
+                    <m:mi>n</m:mi>
+                    <m:mrow>
+                      <m:mo stretchy="false">)</m:mo>
+                      <m:mo stretchy="false">=</m:mo>
+                      <m:mtext>cos</m:mtext>
+                    </m:mrow>
+                    <m:mo stretchy="false">(</m:mo>
+                    <m:mi fontstyle="italic">αn</m:mi>
+                    <m:mo stretchy="false">)</m:mo>
+                    <m:mi>u</m:mi>
+                    <m:mo stretchy="false">(</m:mo>
+                    <m:mi>n</m:mi>
+                    <m:mo stretchy="false">)</m:mo>
+                  </m:mrow>
+                </m:mrow>
+              </m:mstyle>
+              <m:mrow/>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0"> size 12{h \( n \) ="cos" \( αn \) u \( n \) } {}</m:annotation>
+          </m:semantics>
+        </m:math>
+      </equation>
+      <list id="id1165033309848" list-type="bulleted">
+        <item>For the given impulse response find the following:</item>
+      </list>
+      <list id="id1165046109345" list-type="enumerated" number-style="arabic">
+        <item>Transfer function of the system. Look it up in a ZT table.</item>
+        <item>Direct Form II structure of the system.</item>
+        <item>Pole/zero diagram of the system. Assume <emphasis effect="italics">α</emphasis> = π/4 for the example diagram.</item>
+        <item>Difference equation of the system.</item>
+      </list>
+      <list id="id1165058297988" list-type="bulleted">
+        <item>Calculate <emphasis effect="italics">h</emphasis>(0), <emphasis effect="italics">h</emphasis>(1), and <emphasis effect="italics">h</emphasis>(2) assuming the input is an impulse <emphasis effect="italics">x</emphasis>(<emphasis effect="italics">n</emphasis>) = δ(<emphasis effect="italics">n</emphasis>). Simplify the <emphasis effect="italics">h</emphasis>(2) term.</item>
+        <item>Show how you will recursively determine the impulse response of this system.</item>
+        <item>Suppose the sample rate of the system is 8000 Hz and we want to generate a cosine with a frequency of 500 Hz, what should <emphasis effect="italics">α</emphasis> be to implement this cosine function?</item>
+        <item>In MATLAB, write a program that will recursively determine the impulse response of this system with sample rate 8000Hz and cosine of 400 Hz. Put the data into an array and plot the impulse response. Generate 100 points. Compare the recursively generated values to the direct calculation of the cosine function.</item>
+        <item>Modify the while loop Write a program in C that will recursively determine the impulse response of this system.</item>
+      </list>
+      <list id="id1165042507435" list-type="enumerated" number-style="arabic">
+        <item>The recursive portion should be in an infinite <code display="inline">while</code> loop and the data should not go into an array but in a single variable.</item>
+        <item>All of the variables should be of type <code display="inline">double</code>.</item>
+        <item>In your program you will need to include the header file <code display="inline">math.h</code>.</item>
+        <item>The data we are generating is for the D/A converter. The D/A converter accepts <code display="inline">Int16</code> type data which has the limits of [-32768, 32767]. Since the impulse response has the limits [-1, 1] you will need to multiply the result by a number to scale the value up to a level that will work with the D/A converter without overflowing. Use the value <code display="inline">32000.0</code>. The statement will be something like <code display="inline">(Int16)(32000.0*y)</code>.</item>
+        <item>To calculate <emphasis effect="italics">π</emphasis>, use the following statement:</item>
+      </list>
+      <code id="id1165032761145" display="block">pi=16.0*atan(1.0/5.0)-4*atan(1.0/239.0);
+    </code>
+    </section>
+    <section id="id1165031613148">
+      <title>Laboratory</title>
+      <section id="id1165031118550">
+        <title>Part 1</title>
+        <list id="id1165027646212" list-type="bulleted">
+          <item>Use the sample I/O program for the DSK and generate a 400 Hz cosine sampled at 8000 Hz using the recursive program you developed.</item>
+          <item>Change the frequency of the cosine to at least 2 other values from about 50 Hz to 4000 Hz and record the results.</item>
+          <item>What happens when you change the frequency of the cosine to 5000 Hz? Explain what you see.</item>
+        </list>
+      </section>
+      <section id="id1165028277895">
+        <title>Part 2</title>
+        <list id="id1165039001900" list-type="bulleted">
+          <item>In this part you will be creating a Visual Basic (VB) application that communicates with a target application through the Real Time Data Exchange (RTDX). The VB application will have two buttons that when pressed will send different numbers to the target (DSP board). The target application will print the value received to a LOG object and turn the output cosine either on or off.</item>
+          <item>Create a new Visual Basic project (These may not be exactly the steps depending on your version of Visual Studio):</item>
+        </list>
+        <list id="id1165038283980" list-type="enumerated" number-style="arabic">
+          <item>Start Visual Studio.</item>
+          <item>Select Create Project.</item>
+          <item>In the Project types: select Visual Basic:Windows.</item>
+          <item>Under Templates: select Windows Forms Application.</item>
+          <item>The Solution Name will be <code display="inline">CosineOnOff</code>.</item>
+          <item>Click OK.</item>
+        </list>
+        <list id="id1165046468346" list-type="bulleted">
+          <item>Add two buttons to your form with the following characteristics:</item>
+        </list>
+        <list id="id1165053560939" list-type="enumerated" number-style="arabic">
+          <item>(Name): Button1</item>
+          <item>Text: On</item>
+          <item>(Name): Button2</item>
+          <item>Text: Off</item>
+        </list>
+        <list id="id1165038395130" list-type="bulleted">
+          <item>In the Form code in the Form1:(Declarations) section add code for the status constants and other variables. This will be right under the statement <code display="inline">Public Class Form1</code>. The code should be:</item>
+        </list>
+        <code id="id1165034489604" display="block">'--------------------------------------------------------------------------
+    ' RTDX Return Status
+    '--------------------------------------------------------------------------
+    Const Success = &amp;H0 ' Method call is valid
+    Const Failure = &amp;H80004005 ' Method call failed
+    Const ENoDataAvailable = &amp;H8003001E ' No data currently available.
+    Const EEndOfLogFile = &amp;H80030002 ' End of transmission
+    
+    '--------------------------------------------------------------------------
+    ' Variable Declarations
+    '--------------------------------------------------------------------------
+    Dim rtdx As Object ' Holds the rtdx object
+    Dim bufferstate As Integer ' Holds the number of bytes xmitted
+    ' or pending xmission
+    Dim status As Integer ' RTDX Function call return status
+    
+    </code>
+        <list id="id1165027655597" list-type="bulleted">
+          <item>The first function to be executed when a project is started is <code display="inline">Form:Load</code>. In this function put the code for initializing the RTDX channel. Name the channel <code display="inline">HtoTchan</code> for Host to Target channel.</item>
+        </list>
+        <code id="id1165028056365" display="block">Try
+        rtdx_out = CreateObject("RTDX")
+        status = rtdx.Open("HtoTchan", "W") ' Open channel for writing
+    Catch ex As Exception
+        'Exception occured when opening the RTDX object
+        System.Diagnostics.Debug.WriteLine("Opening of channel HtoTchan failed")
+        rtdx_out = Nothing
+        End ' Force program termination
+    End Try
+    </code>
+        <list id="id1165036033838" list-type="bulleted">
+          <item>One of the last functions to execute is the <code display="inline">Form:FormClosing</code> function. In this function put the code for cleaning things up.</item>
+        </list>
+        <code id="id1165042555488" display="block">status = rtdx.Close() ' Close rtdx
+    Set rtdx = Nothing ' Free memory reserved for rtdx obj
+    </code>
+        <list id="id1165034958237" list-type="bulleted">
+          <item>In the <code display="inline">Button1:Click</code> function put the code to be executed when the button is clicked. When the button is clicked it should send a 4 byte integer, the number 1, to the target indicating that button 1 was clicked. The code for doing this is:</item>
+        </list>
+        <code id="id1165032662649" display="block">Dim Data As Integer
+    
+    Data = 1
+    status = rtdx.WriteI4(Data, bufferstate)
+    
+    If status = Success Then
+    Debug.Print "Value " &amp; Data &amp; " was sent to the target"
+    Else
+    Debug.Print "WriteI4 failed"
+    End If
+    </code>
+        <list id="id1165029029581" list-type="bulleted">
+          <item>In the <code display="inline">Button2:Click</code> function put the code to be executed when the button is clicked. When the button is clicked it should send a 4 byte integer, the number 0, to the target indicating that button 2 was clicked. The code is the same as above, the data is just 0.</item>
+          <item>Now the target code needs to be updated. </item>
+          <item>Save the <code display="inline">DSK6713_audio.c </code>file as <code display="inline">DSK6713_audio2.c</code> and use this as the main file in your project.</item>
+          <item>Include a header file so we can use the RTDX.</item>
+        </list>
+        <code id="id1165036014615" display="block">#include &lt;rtdx.h&gt;
+    </code>
+        <list id="id1165037319686" list-type="bulleted">
+          <item>Create a global input channel called <code display="inline">HtoTchan</code>. This code will go in the global variables section.</item>
+        </list>
+        <code id="id1165034593091" display="block">RTDX_CreateInputChannel( HtoTchan );
+    </code>
+        <list id="id1165042684986" list-type="bulleted">
+          <item>Add code to the top of function <code display="inline">processing</code>:</item>
+        </list>
+        <code id="id1165034255727" display="block">int data;
+    int status;
+    int busystatus=0;
+    
+    /* enable the Host to Target channel */
+    RTDX_enableInput( &amp;HtoTchan );
+    </code>
+        <list id="id1165029357729" list-type="bulleted">
+          <item>In the <code display="inline">while</code> loop add the code:</item>
+        </list>
+        <code id="id1165038338268" display="block">/* check to see if the channel is busy before the read */
+    if (busystatus == 0)
+    {
+    /* Print the data if something was actually read */
+    if (RTDX_sizeofInput(&amp;HtoTchan) == sizeof(data))
+    {
+    // data received here
+    LOG_printf(&amp;trace,"Value sent = %d",data);
+    }
+    status = RTDX_readNB( &amp;HtoTchan, &amp;data, sizeof(data) );
+    }
+    
+    /* get the status of the channel */
+    busystatus = RTDX_channelBusy(&amp;HtoTchan);
+    </code>
+        <list id="id1165028091134" list-type="bulleted">
+          <item>The above code will read 4 byte values from the <code display="inline">HtoTchan</code> input channel. When a value is received the program will get to the statement <code display="inline">// data received here</code> and will have the value in the variable <code display="inline">data</code>. </item>
+          <item>Since the variable data will contain either a 1 or a 0 this can be used to multiply the cosine value to turn it on and off. <code display="inline">(Int16)(32000.0*y*data);</code></item>
+          <item>Set up RTDX by opening the Configuration window with Tools-&gt;RTDX-&gt;Configuration Control, right click to select properties and then click on Continuous mode. After closing the properties check the Enable RTDX box.</item>
+          <item>Run the target application. It is important that the target application be started before the VB application. If the VB application is started first the channel may not get initialized.</item>
+          <item>Run the VB application.</item>
+          <item>Verify that the tone that is output can be turned on and off with your VB program.</item>
+        </list>
+      </section>
+    </section>
+  </content>
+</document>

@@ -1,0 +1,81 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Creating a TI Code Composer Studio Simulator Project</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m33263</md:content-id>
+  <md:title>Creating a TI Code Composer Studio Simulator Project</md:title>
+  <md:abstract>This module describes how to create a TI Code Composer Studio v3.3 project and set it up for use with the simulator. This project uses the C6713 Device Cycle Accurate Simulator but the general process can be used for other types of projects. The project is also set up to use DSP/BIOS with the configuration tool.</md:abstract>
+  <md:uuid>cc3c1348-6fb2-4a0d-854c-b3c23e0617e4</md:uuid>
+</metadata>
+<content>
+    <section id="id5474787">
+      <title>Introduction</title>
+      <para id="id8124166">Become familiar with how to create a Code Composer Studio v3.3 project using the simulator and DSP/BIOS.</para>
+    </section>
+    <section id="id10593383">
+      <title>Reading</title>
+      <list id="id12372845" list-type="bulleted">
+        <item>SPRU509: Code Composer Studio Getting Started Guide</item>
+      </list>
+    </section>
+    <section id="id11493686">
+      <title>Description</title>
+      <para id="id8581725">Before creating a project in Code Composer Studio (CCS), you will need to setup CCS for the board or processor you are going to be using. This module will describe how to make a project using the C6713 simulator.</para>
+      <list id="id18839614" list-type="bulleted">
+        <item>Run Setup Code Composer Studio. On the right select the C6713 Device Cycle Accurate Simulator and add it to the left. This is the configuration that will be used when CCS is started. Save and quit. Start CCS.</item>
+      </list>
+      <figure id="id4831259"><media id="id4831259_media" alt="">
+		<image mime-type="image/png" src="../../media/graphics1-a1f4.png" id="id4831259__onlineimage" height="287" width="599"/>
+	</media>
+	<caption>CCS Setup for the C6713 Device Cycle Accurate Simulator.</caption></figure>
+      <list id="id17699572" list-type="bulleted">
+        <item>Create a new project in CCS by selecting Project-&gt;New... This will bring up a window that will look like Figure 2. Type the name of your project in the Project Name field and it will add a folder with the same name in the Location field. Leave everything else the same. Click Finish and CCS will open your new project. This will look like Figure 3.</item>
+      </list>
+      <para id="id3426727">
+        <figure id="id8385739"><media id="id8385739_media" alt="">
+		<image mime-type="image/png" src="../../media/graphics2-bc10.png" id="id8385739__onlineimage" height="272" width="468"/>
+	</media>
+	
+<caption>Project creation window</caption></figure>
+      </para>
+      <figure id="id11634475"><media id="id11634475_media" alt="">
+		<image mime-type="image/png" src="../../media/graphics3-4b60.png" id="id11634475__onlineimage" height="368" width="379"/>
+	</media>
+	
+<caption>Project window</caption></figure>
+      <list id="id16178024" list-type="bulleted">
+        <item>After the project is created, make sure the correct processor is chosen in the build option. Select Project-&gt;Build Options... and select the processor that applies to the the configuration you set up in the Code Composer Setup tool. Here the C671x is selected to match the C6713 Device Cycle Accurate Simulator.</item>
+      </list>
+      <para id="id18977431">
+        <figure id="id7978332"><media id="id7978332_media" alt="">
+		<image mime-type="image/png" src="../../media/graphics4-717e.png" id="id7978332__onlineimage" height="271" width="451"/>
+	</media>
+	
+<caption>Processor selection in Build Options</caption></figure>
+      </para>
+      <list id="id7367839" list-type="bulleted"><item>In order to build a project you must have files in it. To add files you must first create the files and save them. Create a new assembly code file (*.asm), C code file (*.c) or command file (*.cmd) by selecting File-&gt;New-&gt;Source File. When you save the file give it the correct extension. Add the files to the project by selecting Project-&gt;Add Files To Project... and selecting the files. You can see the files in your project by expanding the "+" signs. All projects will need source files and a command file.</item>
+        <item>For projects that use DSP/BIOS, create a new DSP/BIOS Configuration file for the hardware you are using. Select File-&gt;New-&gt;DSP/BIOS Configuration ... If you are using the C6713 simulator then select the ti.platforms.sim67xx template.</item>
+        <item>If you use the template there may be an error in the default settings. If there is no heep set up in any memory bank this must be done first. Click on System-&gt;MEM and check the Segment for DSP/BIOS Objects and Segment for malloc()/free(). If they say MEM_NULL you need to set up a memory heep. Go to the SDRAM under MEM, select the properties and check Create a heep in this memory. The size should be 0x00008000. Then go back to System-&gt;MEM and change the MEM_NULLs to SDRAM.</item>
+        <item>Save the file as configuration file test.tcf and add it to your project. Also add the command file test.cmd file to your project.</item>
+        <item>When developing your main C program for your project it should start with the following code example. Note that the <code display="inline">testcfg.h</code> file is created when the <code display="inline">test.tcf </code>file is compiled. Save the following code in <code display="inline">main.c</code> and add it to your project.</item>
+      </list><code id="id17001561" display="block">#include &lt;std.h&gt;
+    #include "testcfg.h"
+    
+    main(){
+    // Startup code goes here
+    }
+    </code>
+      <figure id="id10563130"><media id="id10563130_media" alt="">
+		<image mime-type="image/png" src="../../media/graphics5-ca67.png" id="id10563130__onlineimage" height="427" width="525"/>
+	</media>
+	
+<caption>Project with tcf and cmd files added</caption></figure>
+      <list id="id5436124" list-type="bulleted">
+        <item>Set up the project for building your <emphasis effect="underline">assembly programs</emphasis> by selecting Project-&gt;Build Options, clicking on the Linker tab and selecting No Autoinitialization for the Autoinit Model. When you build your <emphasis effect="underline">C programs</emphasis> you will want to select Load-time Initialization.</item>
+        <item>Once you have all your files in your project you can build the project to produce the object file (*.out). Select Project-&gt;Build to incrementally build the project or Project-&gt;Build All to rebuild all project files. The Project-&gt;Build will only perform functions that are needed to bring the project up to date. This option will usually be quicker than the Project-&gt;Build All option.</item>
+        <item>Now that the project has been built you must load the object file onto the target board or simulator. Do this by selecting File-&gt;Load Program and selecting the *.out file. The file may be located in a Debug subdirectory.</item>
+        <item>With the project loaded you can step through the code (Debug-&gt;Step Into), view the registers (View-&gt;CPU Registers-&gt;Core Registers) and debug the results. There are buttons on toolbars that you should become familiar with to aid in the debugging process.</item>
+        <item>Since you will be often times loading a program immediately after building it you can set up an option so that the load will occur after you build your project. Select Option-&gt;Customize... and click on the Program/Project/CIO tab. Make sure the Load Program After Build box is checked.</item>
+      </list>
+    </section>
+  </content>
+</document>

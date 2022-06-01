@@ -1,0 +1,135 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Single Sample and Block I/O</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36655</md:content-id>
+  <md:title>Single Sample and Block I/O</md:title>
+  <md:abstract>Data can be input to a signal processing algorithm either a single sample at a time or a block at a time.</md:abstract>
+  <md:uuid>ee1ac8b1-f99e-41a0-9792-bd21762aa40e</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1171573665006">
+      <title>Introduction</title>
+      <para id="id1171569242678">Signal processing applications that run in "real-time" input data, process the data, and then output the data. This can be done either on a single sample basis or a block of data at a time.</para>
+    </section>
+    <section id="id1171568964356">
+      <title>Single Sample I/O</title>
+      <para id="id1171569710429">A simple way to perform signal processing algorithms is to get one input sample from the A/D converter, process the sample in the DSP algorithm, then output that sample to the D/A converter. When I/O is done this way there is a lot of overhead processing to input and output that one sample. As an example, suppose we will process one sample at a time with the following equation</para>
+      <equation id="id1171573051823">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+          <m:semantics>
+            <m:mrow>
+              <m:mstyle fontsize="12pt">
+                <m:mrow>
+                  <m:mrow>
+                    <m:mi>y</m:mi>
+                    <m:mo stretchy="false">(</m:mo>
+                    <m:mi>n</m:mi>
+                    <m:mrow>
+                      <m:mo stretchy="false">)</m:mo>
+                      <m:mo stretchy="false">=</m:mo>
+                      <m:mn>2x</m:mn>
+                    </m:mrow>
+                    <m:mo stretchy="false">(</m:mo>
+                    <m:mi>n</m:mi>
+                    <m:mo stretchy="false">)</m:mo>
+                  </m:mrow>
+                </m:mrow>
+              </m:mstyle>
+              <m:mrow/>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0"> size 12{y \( n \) =2x \( n \) } {}</m:annotation>
+          </m:semantics>
+        </m:math>
+      </equation>
+      <para id="id1171569253410">where 
+<m:math xmlns:m="http://www.w3.org/1998/Math/MathML"><m:semantics><m:mrow><m:mstyle fontsize="12pt"><m:mrow><m:mrow><m:mi>x</m:mi><m:mo stretchy="false">(</m:mo><m:mi>n</m:mi><m:mo stretchy="false">)</m:mo></m:mrow></m:mrow></m:mstyle><m:mrow/></m:mrow><m:annotation encoding="StarMath 5.0"> size 12{x \( n \) } {}</m:annotation></m:semantics></m:math> is the input and 
+<m:math xmlns:m="http://www.w3.org/1998/Math/MathML"><m:semantics><m:mrow><m:mstyle fontsize="12pt"><m:mrow><m:mrow><m:mi>y</m:mi><m:mo stretchy="false">(</m:mo><m:mi>n</m:mi><m:mo stretchy="false">)</m:mo></m:mrow></m:mrow></m:mstyle><m:mrow/></m:mrow><m:annotation encoding="StarMath 5.0"> size 12{y \( n \) } {}</m:annotation></m:semantics></m:math> is the output. Here is how the processing takes place. When an interrupt occurs, systems usually input a sample and output a sample at the same time. Suppose we have a value for the output, y(0), in memory before the interrupt occurs.</para>
+      <figure id="id1171571964664">
+        <media id="id1171571964664_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics1-4336.png" id="id1171571964664__onlineimage" height="123" width="573"/>
+        </media>
+      </figure>
+      <para id="id1171571561472">Then when the interrupt occurs, the y(0) is output and x(0) is input.</para>
+      <figure id="id1171565503139">
+        <media id="id1171565503139_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics2-35ee.png" id="id1171565503139__onlineimage" height="125" width="563"/>
+        </media>
+      </figure>
+      <para id="id1171565010344">After this we can use x(0) to compute the next output. So y(1) = 2x(0).</para>
+      <figure id="id1171580895374">
+        <media id="id1171580895374_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics3-f64a.png" id="id1171580895374__onlineimage" height="121" width="600"/>
+        </media>
+      </figure>
+      <para id="id1171571900521">Then another interrupt occurs and the next values are input and output.</para>
+      <para id="id1171567354380">
+        <figure id="id1171567732842">
+          <media id="id1171567732842_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics4-5012.png" id="id1171567732842__onlineimage" height="124" width="560"/>
+          </media>
+        </figure>
+      </para>
+      <para id="id1171565504655">And the process repeats.</para>
+      <figure id="id1171569665812">
+        <media id="id1171569665812_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics5-176c.png" id="id1171569665812__onlineimage" height="122" width="606"/>
+        </media>
+      </figure>
+      <para id="id1171574228876">Notice that the processing of the input sample must be done before the next interrupt occurs or else we won't have any data to output. Also notice that the output is always one sample delayed from the input. This means that the current input cannot be instantly output but must wait for the next interrupt to occur to be output.</para>
+    </section>
+    <section id="id1171567181457">
+      <title>Block I/O</title>
+      <para id="id1171583608579">In order to minimize the amount of overhead caused by processing one sample at a time in-between each interrupt, the data can be buffered and then processed in a block of data. This is called "block processing." This is the method that will be used in this module and the Code Composer Studio (CCS) project. The benefit of block processing is it reduces overhead in the I/O processes. The drawback to block processing is that it introduces a larger delay in the output since a block of data must be input before any data is processed and then output. The length of the block determines the minimum delay between input and output.</para>
+      <para id="id1171587505023">Suppose we are processing the data with the same algorithm as above:</para>
+      <equation id="id1171570085503">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+          <m:semantics>
+            <m:mrow>
+              <m:mstyle fontsize="12pt">
+                <m:mrow>
+                  <m:mrow>
+                    <m:mi>y</m:mi>
+                    <m:mo stretchy="false">(</m:mo>
+                    <m:mi>n</m:mi>
+                    <m:mrow>
+                      <m:mo stretchy="false">)</m:mo>
+                      <m:mo stretchy="false">=</m:mo>
+                      <m:mn>2x</m:mn>
+                    </m:mrow>
+                    <m:mo stretchy="false">(</m:mo>
+                    <m:mi>n</m:mi>
+                    <m:mo stretchy="false">)</m:mo>
+                  </m:mrow>
+                </m:mrow>
+              </m:mstyle>
+              <m:mrow/>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0"> size 12{y \( n \) =2x \( n \) } {}</m:annotation>
+          </m:semantics>
+        </m:math>
+      </equation>
+      <para id="id1171569132341">Also, suppose we are going to process the data with a block size of 3. This means we need to start with 3 values in our output buffer before we get more data.</para>
+      <figure id="id1171577022506">
+        <media id="id1171577022506_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics6-2904.png" id="id1171577022506__onlineimage" height="176" width="542"/>
+        </media>
+      </figure>
+      <para id="id1171564170409">Three interrupts occur and we get 3 new values and output the three values that are in the output buffer.</para>
+      <para id="id1171566483152">
+        <figure id="id1171587009744">
+          <media id="id1171587009744_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics7-8334.png" id="id1171587009744__onlineimage" height="182" width="536"/>
+          </media>
+        </figure>
+      </para>
+      <para id="id1171567411338">At this point we process the values that were received.</para>
+      <figure id="id1171573032845">
+        <media id="id1171573032845_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics8-7ff3.png" id="id1171573032845__onlineimage" height="177" width="533"/>
+        </media>
+      </figure>
+      <para id="id1171568920601">Then it starts all over again. Notice how far down x(0) is moved. This is the delay amount from the input to the output.</para>
+    </section>
+  </content>
+</document>

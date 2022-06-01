@@ -1,0 +1,71 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Circular Buffers</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36654</md:content-id>
+  <md:title>Circular Buffers</md:title>
+  <md:abstract>Circular buffers are used for first-in-first-out (FIFO) buffers.</md:abstract>
+  <md:uuid>4efd9eb5-1215-4251-bb13-601997a49d46</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1164253841967">
+      <title>Introduction</title>
+      <para id="id1164253219021">When performing DSP algorithms data needs to be stored as it is being input. Only a certain amount of data is kept. New data is saved and the old data is removed. This is a first-in-first-out (FIFO) buffer. There are two ways to implenent the FIFO buffer. One is to shift the data and the other is to implement a circular buffer.</para>
+    </section>
+    <section id="id1164272731052">
+      <title>Shifted buffer</title>
+      <para id="id1164272139335">There are two ways of implementing a FIFO buffer. Both methods start with defining an array that is the length of data needed to be stored. The first method of implementing a FIFO buffer is to add the new data to the beginning of the buffer and shifting the old data in the buffer. The last value that is shifted out is discarded or used before it is removed.</para>
+      <para id="id1164256855622">
+        <figure id="id1164260398245">
+          <media id="id1164260398245_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics1-ef22.png" id="id1164260398245__onlineimage" height="71" width="338"/>
+          </media>
+          <caption/>
+        </figure>
+      </para>
+      <para id="id1164271280266">To implement the FIFO buffer by shifting the following pseudo-code can be used.</para>
+      <para id="id1164264598934"><code display="inline">N</code> - number of coefficients</para>
+      <para id="id8798136"><code display="inline">x(n)</code> - stored input data, n = 0...N-1</para>
+      <para id="id3930354"><code display="inline">input_sample</code> - variable that contains the newest input sample</para>
+      <code id="id1164239697636" display="block">// Shift in the new sample. Note the data is shifted starting at the end.
+    for (i=N-2; i&gt;=0; i--){
+    x[i+1] = x[i];
+    }
+    x[0] = input_sample
+    </code>
+    </section>
+    <section id="id2340628">
+      <title>Circular buffer</title>
+      <para id="id1164259341436">The second method is the more preferable method since it takes less processing. In this method a circular buffer is implemented. An index keeps track of the current point in the buffer. The data in the buffer does not get shifted, the index gets incremented and wrapped around when it gets to the end of the buffer. The element after the current index is the last value in the circular buffer. The following figure shows the circular buffer after the index has already wrapped around. </para>
+      <figure id="id1164240080038">
+        <media id="id1164240080038_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics2-1f55.jpg" id="id1164240080038__onlineimage" height="159" width="650"/>
+        </media>
+        <caption/>
+      </figure>
+      <para id="id1164270660524">In the following figure is an example of a FIFO circular buffer with the number elements equal to 7. In the figure the current index is 3 and that is where the new sample is stored. The last element in the buffer is in element 4.</para>
+      <figure id="id1164252084813">
+        <media id="id1164252084813_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics3-183e.jpg" id="id1164252084813__onlineimage" height="166" width="650"/>
+        </media>
+        <caption>FIFO buffer implemented using a circular buffer</caption>
+      </figure>
+      <para id="id1164252844177">When a new value is received, the index is incremented (and possibly wrapped around to zero), the old value where the index points can be saved in a temporary variable to be used later and the new value is written where the index points thus deleting the old value. After another increment the new representation of the data will look like the following figure.</para>
+      <figure id="id1164252261356">
+        <media id="id1164252261356_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics4-9157.jpg" id="id1164252261356__onlineimage" height="166" width="650"/>
+        </media>
+        <caption>FIFO buffer implemented using a circular buffer after increment</caption>
+      </figure>
+      <para id="id4358384">In terms of signal processing notation, the value at the index 4 is x(n). Since the value at the index 3 came in one time sample before the index 4, it corresponds to x(n-1). Similarly, the value at index 2 is x(n-2).</para>
+      <para id="id1164273038685">The following code shows pseudo-code that can be used to implement a circular buffer. </para>
+      <para id="id1164267461863"><code display="inline">N</code> - number of coefficients</para>
+      <para id="id1164248838267"><code display="inline">x(n)</code> - stored input data, n = 0...N-1</para>
+      <para id="id1164260017054"><code display="inline">input_sample</code> - variable that contains the newest input sample</para>
+      <para id="id1164270128350"><code display="inline">index</code> - location in the buffer where the current sample is stored</para>
+      <code id="id1164263840547" display="block">index = (index+1)%N; // use the remainder to wrap around the index
+    x(index) = input_sample;
+    </code>
+    </section>
+  </content>
+</document>

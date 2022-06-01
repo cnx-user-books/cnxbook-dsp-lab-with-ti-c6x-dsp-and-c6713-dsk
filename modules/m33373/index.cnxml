@@ -1,0 +1,90 @@
+<document xmlns="http://cnx.rice.edu/cnxml" xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <title>Assembly Programming Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m33373</md:content-id>
+  <md:title>Assembly Programming Lab</md:title>
+  <md:abstract>This is the lab assignment portion for the Assembly Programming lab.</md:abstract>
+  <md:uuid>dbb26a32-fd69-41b7-a7ea-52fa9a436525</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1169120229904">
+      <title>Introduction</title>
+      <para id="id1169119813633">The purpose of this lab is to help you become familiar with the internal CPU of the 'C6713 processor. Programs are written in assembly. The first program is very simple so that you can make sure you know how to write an assembly program and debug it. The other two programs are a little more involved and help you understand the multiply and sum algorithm, delay slots and parallel instructions.</para>
+    </section>
+    <section id="id1169121720408">
+      <title>Part 1</title>
+      <list id="id1169122798324" list-type="bulleted">
+        <item>Make a new project titled lab1 using the 'C6713 Simulator.</item>
+        <item>Write a program in assembly that multiplies the two constants 0x35 and 0x10. You will want to review the <code display="inline">MVK</code> and <code display="inline">MPY</code> instructions. <code display="inline">MVK</code> is used to put the constants in a register and the <code display="inline">MPY</code> is used to multiply them. Save this in a file called <code display="inline">lab1p1.asm</code>.</item>
+        <item>Setup the program in Code Composer Studio and run it, recording the values in the registers at each step as you single step through the program. Be sure to note delay slots.</item>
+      </list>
+    </section>
+    <section id="id1169126248605">
+      <title>Part 2</title>
+      <list id="id1169122774016" list-type="bulleted">
+        <item>Write an assembly language program that performs a dot product of the following vectors <emphasis>using a loop</emphasis> that incorporates a conditional branch (The data for <code display="inline">a</code> and <code display="inline">b</code> should be stored in memory).</item>
+      </list>
+      <para id="id1169125532576">a = [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30]</para><para id="id1169124858102">b = [30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1]</para><equation id="id1169121805202">
+        <m:math>
+          <m:semantics>
+            <m:mrow>
+              <m:mstyle fontsize="12pt">
+                <m:mrow>
+                  <m:mrow>
+                    <m:mi>y</m:mi>
+                    <m:mo stretchy="false">=</m:mo>
+                    <m:mrow>
+                      <m:munder>
+                        <m:mo stretchy="false">∑</m:mo>
+                        <m:mstyle fontsize="8pt">
+                          <m:mrow>
+                            <m:mi>k</m:mi>
+                          </m:mrow>
+                        </m:mstyle>
+                      </m:munder>
+                      <m:mrow>
+                        <m:msub>
+                          <m:mi>a</m:mi>
+                          <m:mstyle fontsize="8pt">
+                            <m:mrow>
+                              <m:mi>k</m:mi>
+                            </m:mrow>
+                          </m:mstyle>
+                        </m:msub>
+                        <m:mo stretchy="false">⋅</m:mo>
+                        <m:msub>
+                          <m:mi>b</m:mi>
+                          <m:mstyle fontsize="8pt">
+                            <m:mrow>
+                              <m:mi>k</m:mi>
+                            </m:mrow>
+                          </m:mstyle>
+                        </m:msub>
+                      </m:mrow>
+                    </m:mrow>
+                  </m:mrow>
+                </m:mrow>
+              </m:mstyle>
+              <m:mrow/>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0"> size 12{y= Sum cSub { size 8{k} }  {a rSub { size 8{k} }  cdot b rSub { size 8{k} } } } {}</m:annotation>
+          </m:semantics>
+        </m:math>
+      </equation>
+      <para id="id1169119630957">Use the <code display="inline">ADD</code> command to add the data, <code display="inline">SUB</code> to update a counter and a conditional <code display="inline">B</code> to perform the loop.</para>
+      <list id="id1169122443210" list-type="bulleted">
+        <item>Save the program as <code display="inline">lab1p2.asm</code> and swap it for the other file in your project.</item>
+        <item>Record the results of the run. Also record the number of clock cycles to execute the program. You do not need to optimize your program in this part.</item>
+      </list>
+    </section>
+    <section id="id1957551">
+      <title>Part 3</title>
+      <list id="id1169121360523" list-type="bulleted">
+        <item>Write a third program that performs the same operation as in the previous part but uses <emphasis>parallel instructions</emphasis> and the <emphasis>register file cross path</emphasis>. With the use of parallel instructions and the use of both register files the second program should take fewer instruction cycles. <emphasis>Be sure to use a loop in your optimized program.</emphasis></item>
+        <item>Save the program as <code display="inline">lab1p3.asm</code> and swap it for the other file in your project.</item>
+        <item>Record the results of the run. Also record the number of clock cycles to execute the program.</item>
+      </list>
+    </section>
+  </content>
+</document>

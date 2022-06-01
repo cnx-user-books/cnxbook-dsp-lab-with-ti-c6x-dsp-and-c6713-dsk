@@ -1,0 +1,576 @@
+<document xmlns="http://cnx.rice.edu/cnxml" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:md="http://cnx.rice.edu/mdml">
+  <title>FIR Filter Structures</title>
+  <metadata><md:content-id>undefined</md:content-id><md:title/><md:uuid>7a1a0417-1d45-410b-8cca-0c5e8af3d3e9</md:uuid>
+</metadata>
+
+  <content>
+    <para id="delete_me">
+      Consider causal FIR filters:
+      <m:math>
+	<m:apply>
+	  <m:eq/>
+	  <m:apply>
+	    <m:ci type="fn">y</m:ci>
+	    <m:ci>n</m:ci>
+	  </m:apply>
+	  <m:apply>
+	    <m:sum/>
+	    <m:bvar>
+	      <m:ci>k</m:ci>
+	    </m:bvar>
+	    <m:uplimit>
+	      <m:apply>
+		<m:minus/>
+		<m:ci>M</m:ci>
+		<m:cn>1</m:cn>
+	      </m:apply>
+	    </m:uplimit>
+	    <m:lowlimit>
+	      <m:cn>0</m:cn>
+	    </m:lowlimit>
+	    <m:apply>
+	      <m:times/>
+	      <m:apply>
+		<m:ci type="fn">h</m:ci>
+		<m:ci>k</m:ci>
+	      </m:apply>
+	      <m:apply>
+		<m:ci type="fn">x</m:ci>
+		<m:apply>
+		  <m:minus/>
+		  <m:ci>n</m:ci>
+		  <m:ci>k</m:ci>
+		</m:apply>
+	      </m:apply>
+	    </m:apply>
+	  </m:apply>
+	</m:apply>
+      </m:math>; this can be realized using the following structure
+      
+      <figure id="figure1">
+	<media id="idm6672592" alt=""><image src="../../media/fig1FIRFilterStruct.png" mime-type="image/png"/></media>
+      </figure>
+     
+      or in a different notation
+       
+      <figure id="figure2">
+	<media id="idp3474128" alt=""><image src="../../media/fig2FIRFilterStruct.png" mime-type="image/png"/></media>
+      </figure>
+      <figure id="subfigures3" orient="vertical">
+	<subfigure id="idp381824">
+	  <media id="idp2328592" alt=""><image src="../../media/subfig3aFIRFilterStruct.png" mime-type="image/png"/></media>
+	</subfigure>
+	<subfigure id="idp1935760">
+	  <media id="idp1936144" alt=""><image src="../../media/subfig3bFIRFilterStruct.png" mime-type="image/png"/></media>
+	</subfigure>
+	<subfigure id="idm7172256">
+	  <media id="idm6492192" alt=""><image src="../../media/subfig3cFIRFilterStruct.png" mime-type="image/png"/></media>
+	</subfigure>  
+      </figure>
+      
+      This is called the <term>direct-form FIR filter structure</term>.
+    </para>
+    <para id="para2">
+      There are no closed loops (no feedback) in this structure, so it
+      is called a <term>non-recursive structure</term>. Since any FIR
+      filter can be implemented using the direct-form, non-recursive
+      structure, it is always possible to implement an FIR filter
+      non-recursively. However, it is also possible to implement an
+      FIR filter <emphasis>recursively</emphasis>, and for some
+      special sets of FIR filter coefficients this is much more
+      efficient.
+	
+    </para>
+
+    <example id="ex1">
+      <para id="para3">
+	<m:math display="block">
+	  <m:apply>
+	    <m:eq/>
+	    <m:apply>
+	      <m:ci type="fn">y</m:ci>
+	      <m:ci>n</m:ci>
+	    </m:apply>
+	    <m:apply>
+	      <m:sum/>
+	      <m:bvar>
+		<m:ci>k</m:ci>
+	      </m:bvar>
+	      <m:uplimit>
+		<m:apply>
+		  <m:minus/>
+		  <m:ci>M</m:ci>
+		  <m:cn>1</m:cn>
+		</m:apply>
+	      </m:uplimit>
+	      <m:lowlimit>
+		<m:cn>0</m:cn>
+	      </m:lowlimit>
+	      <m:apply>
+		<m:ci type="fn">x</m:ci>
+		<m:apply>
+		  <m:minus/>
+		  <m:ci>n</m:ci>
+		  <m:ci>k</m:ci>
+		</m:apply>
+	      </m:apply>
+	    </m:apply>
+	  </m:apply>
+	</m:math>
+	where
+	<m:math display="block">
+	  <m:apply>
+	    <m:eq/>
+	    <m:apply>
+	      <m:ci type="fn">h</m:ci>
+	      <m:ci>k</m:ci>
+	    </m:apply>
+	    <m:set>
+	      <m:cn>0</m:cn>
+	      <m:cn>0</m:cn>
+	      <m:cn>
+		<m:munder>
+		  <m:mn>1</m:mn>
+		  <m:munder>
+		    <m:mo>⌃︀</m:mo>
+		    <m:mrow>
+		      <m:mi>k</m:mi>
+		      <m:mo>=</m:mo>
+		      <m:mn>0</m:mn>
+		    </m:mrow>
+		  </m:munder>
+		</m:munder>
+	      </m:cn>
+	      <m:cn>1</m:cn>
+	      <m:ci>…</m:ci>
+	      <m:cn>1</m:cn>
+	      <m:cn>
+		<m:munder>
+		  <m:mn>1</m:mn>
+		  <m:munder>
+		    <m:mo>⌃︀</m:mo>
+		    <m:mrow>
+		      <m:mi>k</m:mi>
+		      <m:mo>=</m:mo>
+		      <m:mi>M</m:mi>
+		      <m:mo>-</m:mo>
+		      <m:mn>1</m:mn>
+		    </m:mrow>
+		  </m:munder>
+		</m:munder>
+	      </m:cn>
+	      <m:cn>0</m:cn>
+	      <m:cn>0</m:cn>
+	      <m:cn>0</m:cn>
+	      <m:ci>…</m:ci>
+	    </m:set>
+	  </m:apply>
+	</m:math>
+	But note that 
+	<m:math display="block">
+	  <m:apply>
+	    <m:eq/>
+	    <m:apply>
+	      <m:ci type="fn">y</m:ci>
+	      <m:ci>n</m:ci>
+	    </m:apply>
+	    <m:apply>
+	      <m:plus/>
+	      <m:apply>
+		<m:ci type="fn">y</m:ci>
+		<m:apply>
+		  <m:minus/>
+		  <m:ci>n</m:ci>
+		  <m:cn>1</m:cn>
+		</m:apply>
+	      </m:apply>
+	      <m:apply>
+		<m:minus/>
+		<m:apply>
+		  <m:ci type="fn">x</m:ci>
+		  <m:ci>n</m:ci>
+		</m:apply>
+		<m:apply>
+		  <m:ci type="fn">x</m:ci>
+		  <m:apply>
+		    <m:minus/>
+		    <m:ci>n</m:ci>
+		    <m:ci>M</m:ci>
+		  </m:apply>
+		</m:apply>
+	      </m:apply>
+	    </m:apply>
+	  </m:apply>
+	</m:math>
+	This can be implemented as
+	
+	<figure id="figure3">
+	  <media id="idp2697664" alt=""><image src="../../media/fig4FIRFilterStruct.png" mime-type="image/png"/></media>
+	</figure>
+
+	Instead of costing 
+	<m:math>
+	  <m:apply>
+	    <m:minus/>
+	    <m:ci>M</m:ci>
+	    <m:cn>1</m:cn>
+	  </m:apply>
+	</m:math> adds/output point, this comb filter costs only two
+	adds/output.
+      </para>
+      
+    </example>
+    <exercise id="exer1">
+      <problem id="idp800368">
+	<para id="para5">
+	  Is this stable, and if not, how can it be made so?
+	</para>
+      </problem>
+    </exercise>
+    <para id="para6">
+      IIR filters must be implemented with a
+      <emphasis>recursive</emphasis> structure, since that's the
+      only way a finite number of elements can generate an
+      infinite-length impulse response in a linear, time-invariant (LTI)
+      system. Recursive structures have the advantages of being
+      able to implement IIR systems, and sometimes greater
+      computational efficiency, but the disadvantages of
+      possible instability, limit cycles, and other deletorious
+      effects that we will study shortly.
+    </para>
+    
+    <section id="sect1">
+      <title>Transpose-form FIR filter structures</title>
+      <para id="para7">
+	The <term>flow-graph-reversal theorem</term> says that if one
+	changes the directions of all the arrows, and inputs at the
+	output and takes the output from the input of a reversed
+	flow-graph, the new system has an identical input-output
+	relationship to the original flow-graph.
+      </para>
+      
+      <figure id="figure4">
+	<title>Direct-form FIR structure</title>
+	<media id="idp3482128" alt=""><image src="../../media/fig2FIRFilterStruct.png" mime-type="image/png"/></media>
+      </figure>
+      
+     
+      <figure id="figure5">
+	<title>reverse = transpose-form FIR filter structure</title>
+	<media id="idm6580736" alt=""><image src="../../media/fig5FIRFilterStruct.png" mime-type="image/png"/></media>
+      </figure>
+      
+      
+      <figure id="figure6">
+	<title>or redrawn</title>
+	<media id="idm5581136" alt=""><image src="../../media/fig6FIRFilterStruct.png" mime-type="image/png"/></media>
+      </figure>
+      
+      <section id="sect2">
+	<title>Cascade structures</title>
+	<para id="para8">
+	  The z-transform of an FIR filter can be factored into a
+	  cascade of short-length filters
+	  <m:math display="block">
+	    <m:apply>
+	      <m:eq/>
+	      <m:apply>
+		<m:plus/>
+		<m:ci>
+		  <m:msub>
+		    <m:mi>b</m:mi>
+		    <m:mn>0</m:mn>
+		  </m:msub>
+		</m:ci>
+		<m:apply>
+		  <m:times/>
+		  <m:ci>
+		    <m:msub>
+		      <m:mi>b</m:mi>
+		      <m:mn>1</m:mn>
+		    </m:msub>
+		  </m:ci>
+		  <m:apply>
+		    <m:inverse/>
+		    <m:ci>z</m:ci>
+		  </m:apply>
+		</m:apply>
+		<m:apply>
+		  <m:times/>
+		  <m:ci>
+		    <m:msub>
+		      <m:mi>b</m:mi>
+		      <m:mn>2</m:mn>
+		    </m:msub>
+		  </m:ci>
+		  <m:apply>
+		    <m:power/>
+		    <m:ci>z</m:ci>
+		    <m:cn>-3</m:cn>
+		  </m:apply>
+		</m:apply>
+		<m:ci>…</m:ci>
+		<m:apply>
+		  <m:times/>
+		  <m:ci>
+		    <m:msub>
+		      <m:mi>b</m:mi>
+		      <m:mi>m</m:mi>
+		    </m:msub>
+		  </m:ci>
+		  <m:apply>
+		    <m:power/>
+		    <m:ci>z</m:ci>
+		    <m:apply>
+		      <m:minus/>
+		      <m:ci>m</m:ci>
+		    </m:apply>
+		  </m:apply>
+		</m:apply>
+	      </m:apply>
+	      <m:apply>
+		<m:times/>
+		<m:ci>
+		  <m:msub>
+		    <m:mi>b</m:mi>
+		    <m:mn>0</m:mn>
+		  </m:msub>
+		</m:ci>
+		<m:apply>
+		  <m:minus/>
+		  <m:cn>1</m:cn>
+		  <m:apply>
+		    <m:times/>
+		    <m:ci>
+		      <m:msub>
+			<m:mi>z</m:mi>
+			<m:mn>1</m:mn>
+		      </m:msub>
+		    </m:ci>
+		    <m:apply>
+		      <m:inverse/>
+		      <m:ci>z</m:ci>
+		    </m:apply>
+		  </m:apply>
+		</m:apply>
+		<m:apply>
+		  <m:minus/>
+		  <m:cn>1</m:cn>
+		  <m:apply>
+		    <m:times/>
+		    <m:ci>
+		      <m:msub>
+			<m:mi>z</m:mi>
+			<m:mn>2</m:mn>
+		      </m:msub>
+		    </m:ci>
+		    <m:apply>
+		      <m:inverse/>
+		      <m:ci>z</m:ci>
+		    </m:apply>
+		  </m:apply>
+		</m:apply>
+		<m:ci>…</m:ci>
+		<m:apply>
+		  <m:minus/>
+		  <m:cn>1</m:cn>
+		  <m:apply>
+		    <m:times/>
+		    <m:ci>
+		      <m:msub>
+			<m:mi>z</m:mi>
+			<m:mi>m</m:mi>
+		      </m:msub>
+		    </m:ci>
+		    <m:apply>
+		      <m:inverse/>
+		      <m:ci>z</m:ci>
+		    </m:apply>
+		  </m:apply>
+		</m:apply>
+	      </m:apply>
+	    </m:apply>
+	  </m:math>
+	  where the
+	  <m:math>
+	    <m:ci>
+	      <m:msub>
+		<m:mi>z</m:mi>
+		<m:mi>i</m:mi>
+	      </m:msub>
+	    </m:ci>
+	  </m:math> are the zeros of this polynomial. Since the
+	  coefficients of the polynomial are usually real, the roots
+	  are usually complex-conjugate pairs, so we generally combine
+	  <m:math>
+	    <m:apply>
+	      <m:times/>
+	      <m:apply>
+		<m:minus/>
+		<m:cn>1</m:cn>
+		<m:apply>
+		  <m:times/>
+		  <m:ci>
+		    <m:msub>
+		      <m:mi>z</m:mi>
+		      <m:mi>i</m:mi>
+		    </m:msub>
+		  </m:ci>
+		  <m:apply>
+		    <m:inverse/>
+		    <m:ci>z</m:ci>
+		  </m:apply>
+		</m:apply>
+	      </m:apply>
+	      <m:apply>
+		<m:minus/>
+		<m:cn>1</m:cn>
+		<m:apply>
+		  <m:times/>
+		  <m:apply>
+		    <m:conjugate/>
+		    <m:ci>
+		      <m:msub>
+			<m:mi>z</m:mi>
+			<m:mi>i</m:mi>
+		      </m:msub>
+		    </m:ci>
+		  </m:apply>
+		  <m:apply>
+		    <m:inverse/>
+		    <m:ci>z</m:ci>
+		  </m:apply>
+		</m:apply>
+	      </m:apply>
+	    </m:apply>
+	  </m:math>
+	  into one quadratic (length-2) section with
+	  <emphasis>real</emphasis> coefficients
+	  <m:math display="block">
+	    <m:apply>
+	      <m:eq/>
+	      <m:apply>
+		<m:times/>
+		<m:apply>
+		  <m:minus/>
+		  <m:cn>1</m:cn>
+		  <m:apply>
+		    <m:times/>
+		    <m:ci>
+		      <m:msub>
+			<m:mi>z</m:mi>
+			<m:mi>i</m:mi>
+		      </m:msub>
+		    </m:ci>
+		    <m:apply>
+		      <m:inverse/>
+		      <m:ci>z</m:ci>
+		    </m:apply>
+		  </m:apply>
+		</m:apply>
+		<m:apply>
+		  <m:minus/>
+		  <m:cn>1</m:cn>
+		  <m:apply>
+		    <m:times/>
+		    <m:apply>
+		      <m:conjugate/>
+		      <m:ci>
+			<m:msub>
+			  <m:mi>z</m:mi>
+			  <m:mi>i</m:mi>
+			</m:msub>
+		      </m:ci>
+		    </m:apply>
+		    <m:apply>
+		      <m:inverse/>
+		      <m:ci>z</m:ci>
+		    </m:apply>
+		  </m:apply>
+		</m:apply>
+	      </m:apply>
+	      <m:apply>
+		<m:plus/>
+		<m:apply>
+		  <m:minus/>
+		  <m:cn>1</m:cn>
+		  <m:apply>
+		    <m:times/>
+		    <m:cn>2</m:cn>
+		    <m:apply>
+		      <m:real/>
+		      <m:ci>
+			<m:msub>
+			  <m:mi>z</m:mi>
+			  <m:mi>i</m:mi>
+			</m:msub>
+		      </m:ci>
+		    </m:apply>
+		    <m:apply>
+		      <m:inverse/>
+		      <m:ci>z</m:ci>
+		    </m:apply>
+		  </m:apply>
+		</m:apply>
+		<m:apply>
+		  <m:times/>
+		  <m:apply>
+		    <m:power/>
+		    <m:apply>
+		      <m:abs/>
+		      <m:ci>
+			<m:msub>
+			  <m:mi>z</m:mi>
+			  <m:mi>i</m:mi>
+			</m:msub>
+		      </m:ci>
+		    </m:apply>
+		    <m:cn>2</m:cn>
+		  </m:apply>
+		  <m:apply>
+		    <m:power/>
+		    <m:ci>z</m:ci>
+		    <m:cn>-2</m:cn>
+		  </m:apply>
+		</m:apply>
+	      </m:apply>
+	      <m:apply>
+		<m:ci type="fn">
+		  <m:msub>
+		    <m:mi>H</m:mi>
+		    <m:mi>i</m:mi>
+		  </m:msub>
+		</m:ci>
+		<m:ci>z</m:ci>
+	      </m:apply>
+	    </m:apply>
+	  </m:math>
+	  The overall filter can then be implemented in a
+	  <term>cascade</term> structure.
+	  
+	  <figure id="figure7">
+	    <media id="idp1227888" alt=""><image src="../../media/fig7FIRFilterStruct.png" mime-type="image/png"/></media>
+	  </figure>
+	  This is occasionally done in FIR filter implementation
+	  when one or more of the short-length filters can be
+	  implemented efficiently.
+	</para>
+      </section>
+      <section id="section4">
+	<title>Lattice Structure</title>
+	<para id="para10">
+	  It is also possible to implement FIR filters in a lattice
+	  structure: this is sometimes used in adaptive filtering
+	  
+	  <figure id="figure8">
+	    <media id="idp1937152" alt=""><image src="../../media/fig8FIRFilterStruct.png" mime-type="image/png"/></media>
+	  </figure>
+	  
+	</para>
+      </section>
+    </section>
+	  
+
+  </content>
+  
+</document>

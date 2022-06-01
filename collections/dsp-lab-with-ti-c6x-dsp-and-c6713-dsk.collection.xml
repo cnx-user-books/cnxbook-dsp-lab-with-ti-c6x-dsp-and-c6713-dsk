@@ -1,0 +1,56 @@
+<col:collection xmlns="http://cnx.rice.edu/collxml" xmlns:md="http://cnx.rice.edu/mdml" xmlns:col="http://cnx.rice.edu/collxml" xml:lang="en">
+  <metadata xmlns:md="http://cnx.rice.edu/mdml" mdml-version="0.5">
+    <md:content-id>col11264</md:content-id>
+    <md:title>DSP Lab with TI C6x DSP and C6713 DSK</md:title>
+    <md:language>en</md:language>
+    <md:license url="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution License</md:license>
+    <md:uuid>17a0ea2a-1817-4d5b-99db-68ef47232c71</md:uuid>
+<md:slug>dsp-lab-with-ti-c6x-dsp-and-c6713-dsk</md:slug>
+</metadata>
+  <col:content>
+    <col:subcollection>
+      <md:title>Assembly Programming Lab</md:title>
+      <col:content>
+        <col:module document="m36319"/>
+        <col:module document="m36321"/>
+        <col:module document="m33263"/>
+        <col:module document="m33373"/>
+      </col:content>
+    </col:subcollection>
+    <col:subcollection>
+      <md:title>C Programming Lab</md:title>
+      <col:content>
+        <col:module document="m36322"/>
+        <col:module document="m36345"/>
+      </col:content>
+    </col:subcollection>
+    <col:subcollection>
+      <md:title>Echo Lab</md:title>
+      <col:content>
+        <col:module document="m36654"/>
+        <col:module document="m36655"/>
+        <col:module document="m36721"/>
+        <col:module document="m36657"/>
+      </col:content>
+    </col:subcollection>
+    <col:subcollection>
+      <md:title>Cosine Generator Lab</md:title>
+      <col:content>
+        <col:module document="m36658"/>
+        <col:module document="m36659"/>
+      </col:content>
+    </col:subcollection>
+    <col:subcollection>
+      <md:title>FIR Lab</md:title>
+      <col:content>
+        <col:module document="m11918"/>
+        <col:module document="m37136"/>
+        <col:module document="m37137"/>
+      </col:content>
+    </col:subcollection>
+    <col:subcollection>
+      <md:title>Noise Cancellation Lab</md:title>
+      <col:content/>
+    </col:subcollection>
+  </col:content>
+</col:collection>

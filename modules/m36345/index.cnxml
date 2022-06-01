@@ -1,0 +1,148 @@
+<document xmlns="http://cnx.rice.edu/cnxml" xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <title>C Programming Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36345</md:content-id>
+  <md:title>C Programming Lab</md:title>
+  <md:abstract>This is the lab assignment portion for the C Programming lab.</md:abstract>
+  <md:uuid>c4934f92-0429-4794-bba9-766a4f919010</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1168939905856">
+      <title>Skills</title>
+      <para id="id1168941386155">This laboratory deals with compiling and running a C program on the TMS320C6713 DSP using Code Composer Studio. By the end of the laboratory you will be able to:</para>
+      <list id="id1168939847945" list-type="bulleted">
+        <item>Compile and build a C language program</item>
+        <item>Run a C language program on the TMS320C6713 DSP</item>
+        <item>Link multiple files with functions into one project</item>
+      </list>
+    </section>
+    <section id="id3478539">
+      <title>Reading</title>
+      <list id="id1168934803443" list-type="bulleted">
+        <item>SPRU 187: Optimizing C Compiler</item>
+        <item>
+          <link url="http://www.cise.ufl.edu/class/cop4600/docs/C_Ref_Card.pdf">C programming reference card</link>
+        </item>
+      </list>
+    </section>
+    <section id="id1168934944004">
+      <title>Description</title>
+      <para id="id1168938217967">If you have forgotten how to program in C/C++ you should review C programming on the many tutorials on the internet or look through your favorite textbook or reference book. This document will not give you a tutorial on how to program in C/C++.</para>
+      <para id="id1168946674489">You must remember that when programming the TI DSP you are loading your program into a system that has its own DSP and memory and is apart from your computer. In order for you to print anything, the data must be sent from the DSP board to CCS and then displayed in the stdio display. This can be very slow so you will want to use the debugging tools to view variables.</para>
+      <para id="id1168940291708">In this lab you will be writing very simple C programs. If you want to print something you will obviously need to include the stdio.h file.</para>
+      <para id="id1168940250490">Your main program should look like:</para>
+      <code id="id1168956115495" display="block">#include &lt;stdio.h&gt;
+    main()
+    {
+    variables
+    code
+    }
+    
+    </code>
+      <para id="id1168944239971">Be sure to use good programming style.</para>
+    </section>
+    <section id="id1893037">
+      <title>Pre-Laboratory</title>
+      <para id="id1168956728733">Write a C program that performs a dot product of the following vectors. The data for <code display="inline">a</code> and <code display="inline">b</code> should be stored in integer arrays. Use a <emphasis effect="italics">for</emphasis> loop.</para>
+      <para id="id1168940481802">a = [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30]</para><para id="id1168939554227">b = [30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1]</para><equation id="id1168941622360">
+        <m:math>
+          <m:semantics>
+            <m:mrow>
+              <m:mstyle fontsize="12pt">
+                <m:mrow>
+                  <m:mrow>
+                    <m:mi>y</m:mi>
+                    <m:mo stretchy="false">=</m:mo>
+                    <m:mrow>
+                      <m:munder>
+                        <m:mo stretchy="false">∑</m:mo>
+                        <m:mstyle fontsize="8pt">
+                          <m:mrow>
+                            <m:mi>k</m:mi>
+                          </m:mrow>
+                        </m:mstyle>
+                      </m:munder>
+                      <m:mrow>
+                        <m:msub>
+                          <m:mi>a</m:mi>
+                          <m:mstyle fontsize="8pt">
+                            <m:mrow>
+                              <m:mi>k</m:mi>
+                            </m:mrow>
+                          </m:mstyle>
+                        </m:msub>
+                        <m:mo stretchy="false">⋅</m:mo>
+                        <m:msub>
+                          <m:mi>b</m:mi>
+                          <m:mstyle fontsize="8pt">
+                            <m:mrow>
+                              <m:mi>k</m:mi>
+                            </m:mrow>
+                          </m:mstyle>
+                        </m:msub>
+                      </m:mrow>
+                    </m:mrow>
+                  </m:mrow>
+                </m:mrow>
+              </m:mstyle>
+              <m:mrow/>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0"> size 12{y= Sum cSub { size 8{k} }  {a rSub { size 8{k} }  cdot b rSub { size 8{k} } } } {}</m:annotation>
+          </m:semantics>
+        </m:math>
+      </equation>
+    </section>
+    <section id="id1869440">
+      <title>Laboratory</title>
+      <section id="id1168938215415">
+        <title>Part 1</title>
+        <list id="id1168956800468" list-type="bulleted">
+          <item>In this part you will create a project that performs the array multiply and sum within the main function of the program. In order to be able to accurately count clock cycles, use the C6713 simulator.</item>
+          <item>Create a new project, call it clab.</item>
+          <item>Create your C file. Call it <code display="inline">main.c</code>. Add this file to your project.</item>
+          <item>You should use the following options for the project (Project-&gt;Build Options):</item>
+          <item>After the project has been loaded, record the values in the variables at each step as you single step through the program. Count the number of clock cycles and compare to the assembly program completed in a previous lab. Be sure to zero the counter before stepping through your code.</item>
+        </list>
+      </section>
+      <section id="id1168939884934">
+        <title>Part 2</title>
+        <list id="id1168960587827" list-type="bulleted">
+          <item>In this part you are going to write a function that performs an array multiply and sum algorithm and returns the sum. This function will be located in another file and you will also make a header file.</item>
+          <item>Create a C file called <code display="inline">multsum.c</code>. In this file make a function called <code display="inline">multsum</code>. The function should have as inputs:</item>
+        </list>
+        <list id="id1168941696116" list-type="bulleted">
+          <item>pointer to integer array <code display="inline">a</code></item>
+          <item>pointer to integer array <code display="inline">b</code></item>
+          <item>number of elements in the arrays</item>
+          <item>The output of the function should be the integer sum. The function should perform the multiply and sum algorithm.</item>
+        </list>
+        <list id="id1168944076220" list-type="bulleted">
+          <item>Create a header file for the multsum function and call it <code display="inline">multsum.h</code>. In the header include the following code:</item>
+        </list>
+        <code id="id2150182" display="block">#ifndef _MULTSUM_H_
+ #define _MULTSUM_H_
+ extern int multsum(int *a, int *b, int length);
+ #endif /*MULTSUM_H_*/
+    </code><para id="id3429498">This uses some compiler directives to determine if the current header file has already been included by another include file. The macro <code display="inline">_MULTSUM_H_</code> is not defined the first time it is encountered so the macro is defined and the definition is included. The <code display="inline">extern</code> keyword tells the compiler that the function is defined in another file.</para>
+        <list id="id1168934471458" list-type="bulleted">
+          <item>In <code display="inline">main.c</code>:</item>
+        </list>
+        <list id="id1168939818997" list-type="bulleted">
+          <item>include the <code display="inline">multsum.h</code> file</item>
+        </list>
+        <code id="id1168949826804" display="block">#include "multsum.h"
+    </code>
+        <list id="id2341355" list-type="bulleted">
+          <item>declare the <code display="inline">a</code> and <code display="inline">b</code> arrays</item>
+          <item>call the <code display="inline">multsum</code> function with the sum returned to a variable</item>
+        </list>
+        <list id="id1168934959449" list-type="bulleted">
+          <item>Include the <code display="inline">multsum.c</code> file in your project.</item>
+          <item>Run the program and verify that the sum that is returned is correct.</item>
+        </list>
+        <para id="id1168938181481"/>
+      </section>
+    </section>
+  </content>
+</document>

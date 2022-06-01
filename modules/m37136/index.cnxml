@@ -1,0 +1,440 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>FIR Filter Implementation</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m37136</md:content-id>
+  <md:title>FIR Filter Implementation</md:title>
+  <md:abstract>This module describes how to implement an FIR filter using a FIFO buffer where the elements are shifted and another that uses a circular buffer.</md:abstract>
+  <md:uuid>0e8a1823-51ab-4c0c-954d-cacd2acd512c</md:uuid>
+</metadata>
+
+<content>
+    <section id="id7762924">
+      <title>Introduction</title>
+      <para id="id5211128">This module explains how to implement an FIR filter in the Direct-Form structure. It explains how data is stored as samples are received and how to use a circular buffer in the algorithm.</para>
+    </section>
+    <section id="id1164018661216">
+      <title>Reading</title>
+      <list id="id1164014597075" list-type="bulleted">
+        <item>For a description of FIR Direct-Form structures see the module <link document="m11918">FIR Filter Structures</link>.</item>
+        <item>For a description of circular buffers see <link document="m36654">Circular Buffers</link>.</item>
+      </list>
+    </section>
+    <section id="id1164009097113">
+      <title>FIR Filtering</title>
+      <para id="id1164012529973">The difference equation for an <emphasis effect="italics">N</emphasis>-order FIR filter is given by:</para>
+      <equation id="id1164011416717">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+          <m:semantics>
+            <m:mrow>
+              <m:mstyle fontsize="12pt">
+                <m:mrow>
+                  <m:mrow>
+                    <m:mi>y</m:mi>
+                    <m:mo stretchy="false">(</m:mo>
+                    <m:mi>n</m:mi>
+                    <m:mrow>
+                      <m:mrow>
+                        <m:mo stretchy="false">)</m:mo>
+                        <m:mo stretchy="false">=</m:mo>
+                        <m:mrow>
+                          <m:munderover>
+                            <m:mo stretchy="false">∑</m:mo>
+                            <m:mstyle fontsize="8pt">
+                              <m:mrow>
+                                <m:mrow>
+                                  <m:mi>k</m:mi>
+                                  <m:mo stretchy="false">=</m:mo>
+                                  <m:mn>0</m:mn>
+                                </m:mrow>
+                              </m:mrow>
+                            </m:mstyle>
+                            <m:mstyle fontsize="8pt">
+                              <m:mrow>
+                                <m:mrow>
+                                  <m:mi>N</m:mi>
+                                  <m:mo stretchy="false">−</m:mo>
+                                  <m:mn>1</m:mn>
+                                </m:mrow>
+                              </m:mrow>
+                            </m:mstyle>
+                          </m:munderover>
+                          <m:mrow>
+                            <m:msub>
+                              <m:mi>b</m:mi>
+                              <m:mstyle fontsize="8pt">
+                                <m:mrow>
+                                  <m:mi>k</m:mi>
+                                </m:mrow>
+                              </m:mstyle>
+                            </m:msub>
+                            <m:mi>x</m:mi>
+                            <m:mo stretchy="false">(</m:mo>
+                            <m:mrow>
+                              <m:mi>n</m:mi>
+                              <m:mo stretchy="false">−</m:mo>
+                              <m:mi>k</m:mi>
+                            </m:mrow>
+                            <m:mo stretchy="false">)</m:mo>
+                          </m:mrow>
+                        </m:mrow>
+                      </m:mrow>
+                      <m:mo stretchy="false">=</m:mo>
+                      <m:mrow>
+                        <m:munderover>
+                          <m:mo stretchy="false">∑</m:mo>
+                          <m:mstyle fontsize="8pt">
+                            <m:mrow>
+                              <m:mrow>
+                                <m:mi>k</m:mi>
+                                <m:mo stretchy="false">=</m:mo>
+                                <m:mn>0</m:mn>
+                              </m:mrow>
+                            </m:mrow>
+                          </m:mstyle>
+                          <m:mstyle fontsize="8pt">
+                            <m:mrow>
+                              <m:mrow>
+                                <m:mi>N</m:mi>
+                                <m:mo stretchy="false">−</m:mo>
+                                <m:mn>1</m:mn>
+                              </m:mrow>
+                            </m:mrow>
+                          </m:mstyle>
+                        </m:munderover>
+                        <m:mrow>
+                          <m:mi>h</m:mi>
+                          <m:mo stretchy="false">(</m:mo>
+                          <m:mi>k</m:mi>
+                          <m:mo stretchy="false">)</m:mo>
+                          <m:mi>x</m:mi>
+                          <m:mo stretchy="false">(</m:mo>
+                          <m:mrow>
+                            <m:mi>n</m:mi>
+                            <m:mo stretchy="false">−</m:mo>
+                            <m:mi>k</m:mi>
+                          </m:mrow>
+                          <m:mo stretchy="false">)</m:mo>
+                        </m:mrow>
+                      </m:mrow>
+                    </m:mrow>
+                  </m:mrow>
+                </m:mrow>
+              </m:mstyle>
+              <m:mrow/>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0"> size 12{y \( n \) = Sum cSub { size 8{k=0} }  cSup { size 8{N - 1} }  {b rSub { size 8{k} } x \( n - k \) } = Sum cSub { size 8{k=0} }  cSup { size 8{N - 1} }  {h \( k \) x \( n - k \) } } {}</m:annotation>
+          </m:semantics>
+        </m:math>
+      </equation>
+      <para id="id1164008951428">For each new input sample, <emphasis effect="italics">x</emphasis>(<emphasis effect="italics">n</emphasis>), the filter produces an output <emphasis effect="italics">y</emphasis>(<emphasis effect="italics">n</emphasis>). To calculate the new output sample, the input must be convolved with the FIR filter impulse response, <emphasis effect="italics">h</emphasis>(<emphasis effect="italics">n</emphasis>). Notice that the summation requires the input samples starting with the most recent sample, <emphasis effect="italics">x</emphasis>(<emphasis effect="italics">n</emphasis>) through the <emphasis effect="italics">N</emphasis>-1 most recent samples, through <emphasis effect="italics">x</emphasis>(<emphasis effect="italics">n</emphasis> - <emphasis effect="italics">N</emphasis> -1). In a DSP system, these previous samples must be saved in an array in memory. Usually there will be one new sample received, <emphasis effect="italics">x</emphasis>(<emphasis effect="italics">n</emphasis>), and any previous samples that were received must be saved in memory.</para>
+    </section>
+    <section id="id1164013872555">
+      <title>FIFO Buffer</title>
+      <para id="id1164009436172">Since the algorithm only needs the previous <emphasis effect="italics">N</emphasis>-1 samples to be saved there must be a way for the algorithm to update the array when a new sample is input. This can be accomplished in two ways. The first way is to shift all the samples in the array by copying them to the shifted location and then storing the new value at the beginning of the array. This is a first-in-first-out (FIFO) buffer. If this method is used then the FIR algorithm is given by</para>
+      <equation id="id1164014547162">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+          <m:semantics>
+            <m:mrow>
+              <m:mstyle fontsize="12pt">
+                <m:mrow>
+                  <m:mrow>
+                    <m:msub>
+                      <m:mi>y</m:mi>
+                      <m:mstyle fontsize="8pt">
+                        <m:mrow>
+                          <m:mstyle fontstyle="italic">
+                            <m:mrow>
+                              <m:mtext>out</m:mtext>
+                            </m:mrow>
+                          </m:mstyle>
+                        </m:mrow>
+                      </m:mstyle>
+                    </m:msub>
+                    <m:mo stretchy="false">=</m:mo>
+                    <m:mrow>
+                      <m:munderover>
+                        <m:mo stretchy="false">∑</m:mo>
+                        <m:mstyle fontsize="8pt">
+                          <m:mrow>
+                            <m:mrow>
+                              <m:mi>k</m:mi>
+                              <m:mo stretchy="false">=</m:mo>
+                              <m:mn>0</m:mn>
+                            </m:mrow>
+                          </m:mrow>
+                        </m:mstyle>
+                        <m:mstyle fontsize="8pt">
+                          <m:mrow>
+                            <m:mrow>
+                              <m:mi>N</m:mi>
+                              <m:mo stretchy="false">−</m:mo>
+                              <m:mn>1</m:mn>
+                            </m:mrow>
+                          </m:mrow>
+                        </m:mstyle>
+                      </m:munderover>
+                      <m:mrow>
+                        <m:mi>h</m:mi>
+                        <m:mo stretchy="false">(</m:mo>
+                        <m:mi>k</m:mi>
+                        <m:mo stretchy="false">)</m:mo>
+                        <m:msub>
+                          <m:mi>x</m:mi>
+                          <m:mstyle fontsize="8pt">
+                            <m:mrow>
+                              <m:mstyle fontstyle="italic">
+                                <m:mrow>
+                                  <m:mtext>saved</m:mtext>
+                                </m:mrow>
+                              </m:mstyle>
+                            </m:mrow>
+                          </m:mstyle>
+                        </m:msub>
+                        <m:mo stretchy="false">(</m:mo>
+                        <m:mi>k</m:mi>
+                        <m:mo stretchy="false">)</m:mo>
+                      </m:mrow>
+                    </m:mrow>
+                  </m:mrow>
+                </m:mrow>
+              </m:mstyle>
+              <m:mrow/>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0"> size 12{y rSub { size 8{ ital "out"} } = Sum cSub { size 8{k=0} }  cSup { size 8{N - 1} }  {h \( k \) x rSub { size 8{ ital "saved"} }  \( k \) } } {}</m:annotation>
+          </m:semantics>
+        </m:math>
+      </equation>
+      <para id="id1164008928818">Figure 1 shows a diagram of the implementation of the FIR filter using the array shifting method. In the diagram the "*" indicates multiplication. The new value is shifted into the <emphasis effect="italics">x</emphasis>(0) spot and all the others are shifted to the right.</para>
+      <para id="id1164017809131">
+        <figure id="id1164011957087">
+          <media id="id1164011957087_media" alt="">
+            <image mime-type="image/jpg" src="../../media/graphics1.jpg" id="id1164011957087__onlineimage" height="213" width="513"/>
+          </media>
+          <caption>Diagram of the FIR filter implementation using the shifting method</caption>
+        </figure>
+      </para>
+      <para id="id1164008088085">The following pseudo-code shows how to implement the FIR filter using the FIFO type buffer. In the code the following definitions are used:</para>
+      <para id="id1164009670176"><code display="inline">N</code> - number of coefficients</para>
+      <para id="id1164027621770"><code display="inline">h(n)</code> - filter coefficients, n = 0...N-1</para>
+      <para id="id1164014204504"><code display="inline">x(n)</code> - stored input data, n = 0...N-1</para>
+      <para id="id1164019733314"><code display="inline">input_sample</code> - variable that contains the newest input sample</para>
+      <code id="id1164008839929" display="block">// Shift in the new sample. Note the data is shifted starting at the end.
+    for (i=N-2; i&gt;=0; i--){
+    x[i+1] = x[i];
+    }
+    x[0] = input_sample
+    // Filter the data
+    ynew = 0;
+    for(i=0;i&lt;N;i++){
+    ynew = ynew + h(i)*x(i);
+    }
+    </code>
+    </section>
+    <section id="id1164008876200">
+      <title>Double Size FIFO Buffer</title>
+      <para id="id1164008094349">In the example above, the data in the FIFO buffer is shifted every time a new sample is received. This could lead to inefficient code. It is better to do processing on blocks of data. For instance, you could use a DMA to copy a block of data from one place to another and free up the processor from doing the work.</para>
+      <para id="id1164013405925">One solution could be to make a FIFO buffer that is twice as large as the data that is needed to store. When this is done, shifting of the data can be done after a block of data is received. </para>
+      <para id="id1164013930026">The following figures show the data buffer as data is being received and stored. Figure 2 shows the buffer when the first new value is received. Of course the buffer would be zeroed before processing begins. The shaded area shows the part of the buffer that is used in the algorithm. </para>
+      <para id="id1164014182718">
+        <figure id="id1164009084276">
+          <media id="id1164009084276_media" alt="">
+            <image mime-type="image/jpg" src="../../media/graphics2-6003.jpg" id="id1164009084276__onlineimage" height="100" width="600"/>
+          </media>
+          <caption>Data buffer at the beginning</caption>
+        </figure>
+      </para>
+      <para id="id1164008785545">Figure 3 shows the buffer after <emphasis effect="italics">M</emphasis> samples have been received. Note that there is no need to shift data in the buffer. The shaded area is what is being used for the fitler.</para>
+      <figure id="id1164010012345">
+        <media id="id1164010012345_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics3-29d6.jpg" id="id1164010012345__onlineimage" height="99" width="600"/>
+        </media>
+        <caption>Data buffer after M values have been stored</caption>
+      </figure>
+      <para id="id1164011080768">Figure 4 shows the buffer when the new sample is stored in the last element of the buffer. At this point the shifting of the data is needed to remove old data. The old data is at the beginning of the buffer. This data is just overwritten with the data at the end of the buffer.</para>
+      <figure id="id1164009223002">
+        <media id="id1164009223002_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics4-29c1.jpg" id="id1164009223002__onlineimage" height="100" width="600"/>
+        </media>
+        <caption>Data buffer when the index reaches the end of the buffer</caption>
+      </figure>
+      <para id="id1164008764347">Figure 5 shows the buffer after the data has been copied. The algorithm will now use the data at the beginning of the buffer just as it did in figure 2. Notice that a large block of data is copied at one time.</para>
+      <figure id="id1164008968297">
+        <media id="id1164008968297_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics5.jpg" id="id1164008968297__onlineimage" height="40" width="599"/>
+        </media>
+        <caption>Data buffer showing the data that is copied from the end to the beginning</caption>
+      </figure>
+      <para id="id1164008669396">The following pseudo-code shows how to implement the FIR filter using the double size FIFO type buffer. In the code the following definitions are used:</para>
+      <para id="id1164008000758"><code display="inline">N</code> - number of coefficients</para>
+      <para id="id1164018691482"><code display="inline">h(n)</code> - filter coefficients, n = 0...N-1</para>
+      <para id="id1164011086391"><code display="inline">x(n)</code> - stored input data, n = 0...2N-1</para>
+      <para id="id1164009357177"><code display="inline">input_sample</code> - variable that contains the newest input sample</para>
+      <para id="id1164009045941"><code display="inline">index</code> - variable that contains the current place where the new sample is to be stored</para>
+      <code id="id1164009164458" display="block">x[index] = input_sample
+    // Filter the data
+    ynew = 0;
+    for(i=0;i&lt;N;i++){
+    ynew = ynew + h(i)*x(index-i);
+    }
+    // update the index and copy the data if necessary
+    index = index+1;
+    if(index&gt;=2*N){
+    for (i=N-2; i&gt;=0; i--){
+    x[i+N+1] = x[i];
+    }
+    index = N - 1;
+    }
+    </code>
+    </section>
+    <section id="id1164009626981">
+      <title>Circular Buffer</title>
+      <para id="id1164009064381">The second method for storing input data is use a circular buffer. To do this you will need to keep track of an index that tells where the last input was stored. This index is incremented and used to store the new value. When the index reaches the end of the array it is wrapped around to the beginning of the array. If this method is used then the FIR algorithm is</para>
+      <equation id="id1164018109036">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+          <m:semantics>
+            <m:mrow>
+              <m:mstyle fontsize="12pt">
+                <m:mrow>
+                  <m:mrow>
+                    <m:msub>
+                      <m:mi>y</m:mi>
+                      <m:mstyle fontsize="8pt">
+                        <m:mrow>
+                          <m:mstyle fontstyle="italic">
+                            <m:mrow>
+                              <m:mtext>out</m:mtext>
+                            </m:mrow>
+                          </m:mstyle>
+                        </m:mrow>
+                      </m:mstyle>
+                    </m:msub>
+                    <m:mo stretchy="false">=</m:mo>
+                    <m:mrow>
+                      <m:munderover>
+                        <m:mo stretchy="false">∑</m:mo>
+                        <m:mstyle fontsize="8pt">
+                          <m:mrow>
+                            <m:mrow>
+                              <m:mi>k</m:mi>
+                              <m:mo stretchy="false">=</m:mo>
+                              <m:mn>0</m:mn>
+                            </m:mrow>
+                          </m:mrow>
+                        </m:mstyle>
+                        <m:mstyle fontsize="8pt">
+                          <m:mrow>
+                            <m:mrow>
+                              <m:mi>N</m:mi>
+                              <m:mo stretchy="false">−</m:mo>
+                              <m:mn>1</m:mn>
+                            </m:mrow>
+                          </m:mrow>
+                        </m:mstyle>
+                      </m:munderover>
+                      <m:mrow>
+                        <m:mi>h</m:mi>
+                        <m:mo stretchy="false">(</m:mo>
+                        <m:mi>k</m:mi>
+                        <m:mo stretchy="false">)</m:mo>
+                        <m:mi>x</m:mi>
+                        <m:mo stretchy="false">(</m:mo>
+                        <m:mo stretchy="false">(</m:mo>
+                        <m:mrow>
+                          <m:mstyle fontstyle="italic">
+                            <m:mrow>
+                              <m:mtext>index</m:mtext>
+                            </m:mrow>
+                          </m:mstyle>
+                          <m:mo stretchy="false">−</m:mo>
+                          <m:mi>k</m:mi>
+                        </m:mrow>
+                        <m:mo stretchy="false">)</m:mo>
+                        <m:msub>
+                          <m:mo stretchy="false">)</m:mo>
+                          <m:mstyle fontsize="8pt">
+                            <m:mrow>
+                              <m:mi>N</m:mi>
+                            </m:mrow>
+                          </m:mstyle>
+                        </m:msub>
+                      </m:mrow>
+                    </m:mrow>
+                  </m:mrow>
+                </m:mrow>
+              </m:mstyle>
+              <m:mrow/>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0"> size 12{y rSub { size 8{ ital "out"} } = Sum cSub { size 8{k=0} }  cSup { size 8{N - 1} }  {h \( k \) x \(  \(  ital "index" - k \)  \)  rSub { size 8{N} } } } {}</m:annotation>
+          </m:semantics>
+        </m:math>
+      </equation>
+      <para id="id1164033936889">where 
+<m:math xmlns:m="http://www.w3.org/1998/Math/MathML"><m:semantics><m:mrow><m:mstyle fontsize="12pt"><m:mrow><m:mrow><m:mo stretchy="false">(</m:mo><m:mo stretchy="false">∗</m:mo><m:msub><m:mo stretchy="false">)</m:mo><m:mstyle fontsize="8pt"><m:mrow><m:mi>N</m:mi></m:mrow></m:mstyle></m:msub></m:mrow></m:mrow></m:mstyle><m:mrow/></m:mrow><m:annotation encoding="StarMath 5.0"> size 12{ \( * \)  rSub { size 8{N} } } {}</m:annotation></m:semantics></m:math> is modulo-<emphasis effect="italics">N</emphasis>. This assumes that the index is incremented as new data is stored in the buffer. The following figure shows how the data for <emphasis effect="italics">x</emphasis>(<emphasis effect="italics">n</emphasis>) is stored in a circular buffer.</para>
+      <para id="id1164009366979">When implementing the FIR filter using a circular buffer, notice that the coefficient buffer indexes going forward and the data buffer indexes going backward. </para>
+      <para id="id1164008935720"><code display="inline">N</code> - number of coefficients</para>
+      <para id="id1164008859496"><code display="inline">h(n)</code> - filter coefficients, n = 0...N-1</para>
+      <para id="id3658235"><code display="inline">x(n)</code> - stored input data, n = 0...2N-1</para>
+      <para id="id1164031747064"><code display="inline">input_sample</code> - variable that contains the newest input sample</para>
+      <para id="id1164014549308"><code display="inline">index</code> - variable that contains the current place where the new sample is to be stored</para>
+      <code id="id1164017520476" display="block">x[index] = input_sample
+    // Filter the data
+    ynew = 0;
+    for(i=0;i&lt;N;i++){
+    if((index-i)&lt;0){
+    ynew = ynew + h[i]*x[index-i+N];
+    }
+    else {
+    ynew = ynew + h[i]*x[index-i];
+    }
+    }
+    index = (index+1)%N;
+    </code>
+    </section>
+    <section id="id1164008964181">
+      <title>Double Size Circular Buffer</title>
+      <para id="id1164009436520">In the previous implementation of the circular buffer notice that there is an if statement in the filter loop. This is very time consuming. So to remove this from the loop a buffer that is twice the length can be used. The new value that is received is put in two places within the buffer.</para>
+      <para id="id1164017471584">In the following figure shows a buffer for a circular buffer of size 4. Therefore the total length of the buffer is 8. The two indexes point to the places where the input sample is stored. In the figure the shaded boxes are the intems that make up the filter elements. Since the samples do not wrap around the end of the buffer there is no need to check the offset in the loop.</para>
+      <figure id="id1164009241562">
+        <media id="id1164009241562_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics6.jpg" id="id1164009241562__onlineimage" height="78" width="599"/>
+        </media>
+        <caption>Double sized circular buffer with two indexes</caption>
+      </figure>
+      <para id="id1164025544065">After the filter output is determine the indexes are incremented and checked to see if they go past the end of the buffer. The following figure shows the buffer and indexes after one increment.</para>
+      <figure id="id1164017520070">
+        <media id="id1164017520070_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics7.jpg" id="id1164017520070__onlineimage" height="78" width="599"/>
+        </media>
+        <caption>Buffer after increment of indexes</caption>
+      </figure>
+      <para id="id1164014392588">The following figure shows the indexes after another increment. Notice that the indexes wrap around and the element that are used still don't wrap around the end of the buffer.</para>
+      <figure id="id1164012645225">
+        <media id="id1164012645225_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics8.jpg" id="id1164012645225__onlineimage" height="78" width="599"/>
+        </media>
+        <caption>Buffer after indexes wrap around the end</caption>
+      </figure>
+      <para id="id1164017453568">To implement the double size circular buffer the following pseudo-code can be used.</para>
+      <para id="id1164018656654"><code display="inline">N</code> - number of coefficients</para>
+      <para id="id1164009598846"><code display="inline">h(n)</code> - filter coefficients, n = 0...N-1</para>
+      <para id="id1164023507252"><code display="inline">x(n)</code> - stored input data, n = 0...2N-1</para>
+      <para id="id1164008751529"><code display="inline">input_sample</code> - variable that contains the newest input sample</para>
+      <para id="id1164008959657"><code display="inline">index1</code> - the first place in x(n) where the new sample is to be stored</para>
+      <para id="id1164015724430"><code display="inline">index2</code> - the second place in x(n) where the new sample is to be stored</para>
+      <code id="id1164009144606" display="block">// variable are initialized to the following values
+    int index1=0;
+    int index2=N;
+    
+    // As a new sample is received put it in two places
+    x[index1] = input_sample;
+    x[index2] = input_sample;
+    ynew = 0;
+    for(i=0;i&lt;N;i++){
+    ynew = ynew + h[i]*x[index2-i];
+    }
+    index1 = (index1+1)%N;
+    index2 = index1+N;
+    </code>
+    </section>
+  </content>
+</document>

@@ -1,0 +1,215 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Code Composer Studio v4 Assembly Project</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36321</md:content-id>
+  <md:title>Code Composer Studio v4 Assembly Project</md:title>
+  <md:abstract>This module describes the process of creating, building and debugging a Code Composer Studio (CCS) v4 assembly program project.</md:abstract>
+  <md:uuid>b1d952ff-8df2-4dce-af09-6459892dfd7f</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1170637269768">
+      <title>Introduction</title>
+      <para id="id1170632756247">This module describes how to create a Code Composer Studio (CCS) v4 project that executes a simple assembly program. The module does not explain the code in the project files. The project does not use DSP/BIOS and runs on the TI simulator. In this project the processor used is the TMS320C67xx but the process should work for other processors as well.</para>
+    </section>
+    <section id="id1170636735502">
+      <title>Create a CCS project</title>
+      <para id="id1170636768704">To create a CCS project select <emphasis>File-&gt;New-&gt;CCS Project</emphasis>. </para>
+      <figure id="id1170650513168">
+        <media id="id1170650513168_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics1-e784.png" id="id1170650513168__onlineimage" height="281" width="600"/>
+        </media>
+        <caption>Screenshot of CCS Project menu</caption>
+      </figure>
+      <para id="id1170643555075">This will bring up a window where you can enter the name of the project. The location selected is the default location for project files. Press <emphasis>Next</emphasis>. </para>
+      <figure id="id1170642051542">
+        <media id="id1170642051542_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics2-d62b.png" id="id1170642051542__onlineimage" height="258" width="566"/>
+        </media>
+        <caption>CCS Project name and location</caption>
+      </figure>
+      <para id="id1170652832944">Since the example uses the TMS320C67xx processor the project type selected is <emphasis>C6000</emphasis>. The project configurations are <emphasis>Debug</emphasis> and <emphasis>Release</emphasis>. Select the <emphasis>Next</emphasis> button.</para>
+      <para id="id1170633765404">
+        <figure id="id1819164">
+          <media id="id1819164_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics3-94ba.png" id="id1819164__onlineimage" height="445" width="549"/>
+          </media>
+          <caption>Type of CCS project</caption>
+        </figure>
+      </para>
+      <para id="id1170646283416">If there are any project dependencies they are selected on the next screen. Select the <emphasis>Next</emphasis> button.</para>
+      <para id="id1170652736008">
+        <figure id="id6463086">
+          <media id="id6463086_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics4-c4bd.png" id="id6463086__onlineimage" height="444" width="545"/>
+          </media>
+          <caption>CCS Project dependencies</caption>
+        </figure>
+      </para>
+      <para id="id1170642664056">On the <emphasis>Project Settings Screen</emphasis>, select the items that pertain to the type of project to be created. Since the project will be executed select <emphasis>Output Type: Executable</emphasis>. The processor type is TMS320C67xx so the <emphasis>Device Variant</emphasis> is <emphasis>Generic C67xx Device</emphasis>. This project will use <emphasis>Little Endian</emphasis>. The code generation tools are the latest version (in this case TI v7.0.3). The runtime support library is selected to match the device variant and the endianness selected. The library can be selected automatically. Press <emphasis>Next</emphasis>.</para>
+      <para id="id1170637597625">Since this project will have assembly programs only, select the <emphasis>Empty Assembly-only Project</emphasis>. Select <emphasis>Finish</emphasis> and the project will show up in the <emphasis>C/C++ Projects</emphasis> view.</para>
+      <para id="id1170640460488">
+        <figure id="id1170630488346">
+          <media id="id1170630488346_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics5-258f.png" id="id1170630488346__onlineimage" height="466" width="479"/>
+          </media>
+          <caption>Project settings window</caption>
+        </figure>
+      </para>
+      <para id="id8842046">
+        <figure id="id1170644202943">
+          <media id="id1170644202943_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics6-3a4b.png" id="id1170644202943__onlineimage" height="468" width="586"/>
+          </media>
+          <caption>Project Templates</caption>
+        </figure>
+      </para>
+      <figure id="id1170639948862">
+        <media id="id1170639948862_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics7-a3f1.png" id="id1170639948862__onlineimage" height="121" width="368"/>
+        </media>
+        <caption>C/C++ projects view</caption>
+      </figure>
+    </section>
+    <section id="id1170642068824">
+      <title>Add code files</title>
+      <para id="id1170646560871">There are three files that will be added to the project. One, <code display="inline">main.asm</code>, will contain the assembly program we want to execute. The file <code display="inline">vectors.asm</code> will contain the code that gets executed when the reset interrupt occurs. The file <code display="inline">link.cmd</code> will be the linker command file that tells the linker where section of memory are located and where to put the code in the memory map.</para>
+      <section id="id1170632870727">
+        <title>Main program</title>
+        <para id="id1170646672884">Create the main.asm file that conains the assembly program to execute. Select <emphasis>File-&gt;New-&gt;Source File</emphasis>.</para>
+        <para id="id1170633223946">
+          <figure id="id2904670">
+            <media id="id2904670_media" alt="">
+              <image mime-type="image/png" src="../../media/graphics8-df5b.png" id="id2904670__onlineimage" height="277" width="600"/>
+            </media>
+            <caption>New source file</caption>
+          </figure>
+        </para>
+        <para id="id1170631646205">The <emphasis>New Source File</emphasis> dialog opens and you can enter the source file name. Add a <emphasis>.asm</emphasis> extension for an assembly program file. The source folder should be the folder of your project. Select <emphasis>Finish</emphasis> and a new file is opened.</para>
+        <figure id="id1170650300205">
+          <media id="id1170650300205_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics9-8290.png" id="id1170650300205__onlineimage" height="240" width="562"/>
+          </media>
+          <caption>New source file dialog</caption>
+        </figure>
+        <para id="id1170633812027">Enter the assembly code shown below in <code display="inline">main.asm</code>.</para>
+        <code id="id1170644519107" display="block">; Example assembly file
+    ; Multiply two numbers 
+    .text ; Indicates that what follows is code
+    .def _c_int00; This symbol is defined in this file
+    ; but used in another file
+    _c_int00: MVK .S1 0x34,A1 ; Put a number in register A1
+    MVK .S1 0x25,A2 ; Put a number in register A2
+    MPY .M1 A1,A2,A1 ; Multiply two numbers in A1 and A2
+    NOP
+    NOP
+    NOP
+    NOP
+    NOP
+    </code>
+      </section>
+      <section id="id1170631592180">
+        <title>Reset vector file</title>
+        <para id="id4344081">When a reset interrupt occurs in a C6000 processor the system will start executing the code located at the interrupt memory location. There are only 8 instructions at each interrupt vector. If a long program is to be executed then the interrupt vector needs to branch to the program location. This is done by using a resect vector program.</para>
+        <para id="id1170635618783">Create a new file named <code display="inline">vectors.asm</code> and enter the following code.</para>
+        <code id="id1170653376591" display="block">.ref _c_int00 ; name of the label where
+    ; the program is located
+    .sect"vectors" ; this will put this code
+    ; in the vectors memeory section
+    reset: mvkl.s2 _c_int00,b0 ; put the address in b0
+    mvkh.s2_c_int00,b0
+    b .s2 b0 ; branch to the program
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    </code>
+      </section>
+      <section id="id1170651207988">
+        <title>Command file</title>
+        <para id="id1170643570824">The linker command file tells the linker information about the memory map and where to put parts of the code like data and program instructions. Create a new file named <code display="inline">link.cmd</code> and enter the following code.</para>
+        <code id="id1170642886890" display="block">MEMORY
+    {
+    VECS : origin = 0x00000000 length = 0x00000220
+    IPRAM : origin = 0x00000240 length = 0x0000FDC0
+    }
+    SECTIONS
+    {
+    vectors &gt; VECS
+    .text &gt; IPRAM
+    }
+    </code>
+      </section>
+    </section>
+    <section id="id1170637309801">
+      <title>Create a target configuration</title>
+      <para id="id1170640744081">In order to build and run your project you need to have a target configuration. This file will contain information about the emulator that will be used and the target processor. In this module the target configuration will be the TI simulator for the C6713 processor. First select <emphasis>File-&gt;New-&gt;Target Configuration File</emphasis>. </para>
+      <para id="id1170631328081">
+        <figure id="id1170654096894">
+          <media id="id1170654096894_media" alt="">
+            <image mime-type="image/png" src="../../media/Picture 11.png" id="id1170654096894__onlineimage" height="277" width="600"/>
+          </media>
+          <caption>Open new target configuration file</caption>
+        </figure>
+      </para>
+      <para id="id1170642902204">In the New Target Configuration dialog enter the configuration file name ending in the <emphasis>.ccxml</emphasis> file extension. Put the file in the project directory. Select <emphasis>Finish</emphasis> and a new target configuration file opens.</para>
+      <para id="id1170638715555">In the configuration, select the connection needed (simulator or some type of emulator, etc.) and the type of device. In this example the TI simulator is used with the C67xx little endian simulator device. Select <emphasis>Save</emphasis> when done.</para>
+      <figure id="id1170637223145">
+        <media id="id1170637223145_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics10-e4a8.png" id="id1170637223145__onlineimage" height="401" width="485"/>
+        </media>
+        <caption/>
+      </figure>
+      <para id="id1170650697764">Now the target configuration is in the project.</para>
+      <figure id="id5237513">
+        <media id="id5237513_media" alt="">
+          <image mime-type="image/png" src="../../media/Picture 1.png" id="id5237513__onlineimage" height="170" width="379"/>
+        </media>
+        <caption>Project files</caption>
+      </figure>
+    </section>
+    <section id="id1170643764756">
+      <title>Debug the project</title>
+      <para id="id1170653861263">To start a debug session either select <emphasis>Target-&gt;Debug Active Project</emphasis> or press the debug icon in the menu bar.</para>
+      <figure id="id1170635440293">
+        <media id="id1170635440293_media" alt="">
+          <image mime-type="image/png" src="../../media/Picture 2.png" id="id1170635440293__onlineimage" height="38" width="75"/>
+        </media>
+        <caption>Debug icon</caption>
+      </figure>
+      <para id="id1170631328407">When the debug session starts the code files are compiled and linked into an executable file and the file is loaded onto the target. The reset vector code should be located at memroy location 0x0.</para>
+      <figure id="id1170631316198">
+        <media id="id1170631316198_media" alt="">
+          <image mime-type="image/png" src="../../media/Picture 3.png" id="id1170631316198__onlineimage" height="197" width="599"/>
+        </media>
+        <caption>Debugging session</caption>
+      </figure>
+      <para id="id1170644508435">If your window is small, CCS may not have room to open all windows. In this case your debugging window may look like the following figure.</para>
+      <para id="id1170639521878">
+        <figure id="id1170630316590">
+          <media id="id1170630316590_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics11-6204.png" id="id1170630316590__onlineimage" height="432" width="468"/>
+          </media>
+          <caption>Crowded debug window</caption>
+        </figure>
+      </para>
+      <para id="id1170641451713">Note that the window where the program files are located may not show much (circled in red). In this case you will need to expand the window.</para>
+      <para id="id1170644905207">Begin executing the code by stepping through the code using the <emphasis>Assembly Step Into</emphasis> button.</para>
+      <figure id="id1170646114142">
+        <media id="id1170646114142_media" alt="">
+          <image mime-type="image/png" src="../../media/Picture 4.png" id="id1170646114142__onlineimage" height="31" width="42"/>
+        </media>
+        <caption>Assembly Step Into button</caption>
+      </figure>
+      <para id="id1170650991721">The code should execute until the branch instruction finishes executing and then it should jump to the main function located at a different memory location.</para>
+      <figure id="id1170629177541">
+        <media id="id1170629177541_media" alt="">
+          <image mime-type="image/png" src="../../media/Picture 5.png" id="id1170629177541__onlineimage" height="192" width="600"/>
+        </media>
+        <caption>Debugging session after jump to main function</caption>
+      </figure>
+    </section>
+  </content>
+</document>

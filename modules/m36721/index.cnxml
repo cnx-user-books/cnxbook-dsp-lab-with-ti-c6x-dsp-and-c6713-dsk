@@ -1,0 +1,245 @@
+<document xmlns="http://cnx.rice.edu/cnxml" xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <title>Code Composer Studio v3.3 DSP/BIOS and C6713 DSK</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36721</md:content-id>
+  <md:title>Code Composer Studio v3.3 DSP/BIOS and C6713 DSK</md:title>
+  <md:abstract>This module describes the TI C6713 DSK hardware and how to set up a Code Composer Studio v3.3 DSP/BIOS project for the DSK.</md:abstract>
+  <md:uuid>00eb44e6-347d-4679-91af-3bc8e3102e9e</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1170420981074">
+      <title>Introduction</title>
+      <para id="id1170420765832">This module describes the TMS320C6713 DSK development board and how to use it in a Code Composer Studio (CCS) v3.3 project that uses DSP/BIOS. An example project is included.</para>
+    </section>
+    <section id="id1170420815934">
+      <title>Reading</title>
+      <list id="id1170420644499" list-type="bulleted">
+        <item>TMS320C6713 DSK Technical Reference</item>
+        <item>SLWS106D: TLV320AIC23 Technical Manual</item>
+        <item>SPRA677: A DSP/BIOS AIC23 Codec Device Driver for the TMS320C6713 DSK</item>
+        <item>SPRU616: DSP/BIOS Driver Developer's Guide</item>
+        <item>SPRA846: A DSP/BIOS EDMA McBSP Device Driver for TMS320C6x1x DSPs</item>
+      </list>
+    </section>
+    <section id="id1170420984762">
+      <title>Project Files</title>
+      <para id="id1170420957541">The files referred to in this module can be found in this ZIP file: <link url="http://cnx.org/content/m36656/latest/DSK6713_audio.zip">DSK6713_audio.zip</link></para>
+    </section>
+    <section id="id1170421047228">
+      <title>DSK Hardware</title>
+      <para id="id1170412067889">The following figure shows the block diagram of the TMS320C6713 DSK hardware. The heart of the DSK is the TMS320C6713 DSP chip which runs at 225 MHz. The DSP is in the center of the block diagram and connects to external memory through the EMIF interface. There are several devices connected to this interface. One device is a 16 Mbyte SDRAM chip. This memory, along with the internal DSP memory, will be where code and data are stored.</para>
+      <para id="id1170411879995">On the DSK board there is a TLV320AIC23 (AIC23) 16-bit stereo audio CODEC (coder/decoder). The chip has a mono microphone input, stereo line input, stereo line output and stereo headphone output. These outputs are accessible on the DSK board. The AIC23 figure shows a simplified block diagram of the AIC23 and its interfaces. The CODEC interfaces to the DSP through its McBSP serial interface. The CODEC is a 16-bit device and will be set up to deliver 16-bit signed 2's complement samples packed into a 32-bit word. Each 32-bit word will contain a sample from the left and right channel in that order. The data range is from -
+<m:math><m:semantics><m:mrow><m:mstyle fontsize="12pt"><m:mrow><m:msup><m:mn>2</m:mn><m:mstyle fontsize="8pt"><m:mrow><m:mrow><m:mo stretchy="false">(</m:mo><m:mrow><m:mtext>16</m:mtext><m:mo stretchy="false">−</m:mo><m:mn>1</m:mn></m:mrow><m:mo stretchy="false">)</m:mo></m:mrow></m:mrow></m:mstyle></m:msup></m:mrow></m:mstyle><m:mrow/></m:mrow><m:annotation encoding="StarMath 5.0"> size 12{2 rSup { size 8{ \( "16" - 1 \) } } } {}</m:annotation></m:semantics></m:math> to (
+<m:math><m:semantics><m:mrow><m:mstyle fontsize="12pt"><m:mrow><m:msup><m:mn>2</m:mn><m:mstyle fontsize="8pt"><m:mrow><m:mrow><m:mo stretchy="false">(</m:mo><m:mrow><m:mtext>16</m:mtext><m:mo stretchy="false">−</m:mo><m:mn>1</m:mn></m:mrow><m:mo stretchy="false">)</m:mo></m:mrow></m:mrow></m:mstyle></m:msup></m:mrow></m:mstyle><m:mrow/></m:mrow><m:annotation encoding="StarMath 5.0"> size 12{2 rSup { size 8{ \( "16" - 1 \) } } } {}</m:annotation></m:semantics></m:math>-1) or -32768 to 32767.</para>
+      <para id="id1170420938257">
+        <figure id="id1170421132016">
+          <media id="id1170421132016_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics1-6414.png" id="id1170421132016__onlineimage" height="370" width="653"/>
+          </media>
+          <caption>TMS320C613 DSK Block Diagram taken from TMS320C6713 DSK Technical Reference</caption>
+        </figure>
+      </para>
+      <figure id="id1170421404588">
+        <media id="id1170421404588_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics2-b145.png" id="id1170421404588__onlineimage" height="323" width="652"/>
+        </media>
+        <caption>Simplified AIC23 CODEC Interface taken from TMS320C6713 DSK Technical Reference</caption>
+      </figure>
+    </section>
+    <section id="id1170421979305">
+      <title>DSK6713 Audio Project Framework</title>
+      <para id="id1170412052058">The following figure shows a diagram of the software that will be used in this module. Texas Instruments has written some drivers for the McBSP that get data from the AIC23 and write data to the AIC23. The input data is put into an input stream (input buffer) and the output data is read from an output stream (output buffer). The signal processing software simply needs to get a buffer from the input stream, process the data, then put the resulting buffer in the output stream.</para>
+      <para id="id1170421100588">The project is set up using DSP/BIOS, a real time operating systems developed by TI. This module does not explain how to use DSP/BIOS but it will explain what objects are used in this project. The main objects are an input stream, <code display="inline">inStream</code>, an output stream, <code display="inline">outStream</code>, and a task, <code display="inline">TSK_processing</code>, which uses the function <code display="inline">processing()</code>.</para>
+      <figure id="id1170421066479">
+        <media id="id1170421066479_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics3-94cb.png" id="id1170421066479__onlineimage" height="350" width="588"/>
+        </media>
+        <caption>Block diagram of the signal processing framework.</caption>
+      </figure>
+      <para id="id1170410929403">There are a few things that can be easily modified by the user in the main program file <code display="inline">DSK6713_audio.c</code>.</para>
+      <section id="id1170420851018">
+        <title>CODEC Setup</title>
+        <para id="id1170411131329">The CODEC can be set up for different inputs and different sample rates. In the program there is a variable that sets up the registers in the CODEC:</para>
+        <code id="id1170421029602" display="block">DSK6713_EDMA_AIC23_DevParams AIC23CodecConfig ={
+    0x0000AB01, //VersionId
+    0x00000001, //cacheCalls
+    0x00000008, //irqId
+    AIC23_REG0_DEFAULT,
+    AIC23_REG1_DEFAULT,
+    AIC23_REG2_DEFAULT,
+    AIC23_REG3_DEFAULT,
+    AIC23_REG4_LINE,// Use the macro for Mic or Line here
+    AIC23_REG5_DEFAULT,
+    AIC23_REG6_DEFAULT,
+    AIC23_REG7_DEFAULT,
+    AIC23_REG8_48KHZ,// Set the sample rate here
+    AIC23_REG9_DEFAULT,
+    0x00000001, //intrMask
+    0x00000001 //edmaPriority
+    };
+    </code>
+        <para id="id1170412068566">This is set up to use the Line In as the input with the macro <code display="inline">AIC23_REG4_LINE</code>. If the microphone input is needed then change this macro to <code display="inline">AIC23_REG4_MIC</code>. The sample rate is set to 48kHz with the macro <code display="inline">AIC23_REG8_48KHZ</code>. This sample rate can be changed by changing the line to one of the following macros:</para>
+        <code id="id1170420952020" display="block">AIC23_REG8_8KHZ
+    AIC23_REG8_32KHZ
+    AIC23_REG8_44_1KHZ
+    AIC23_REG8_48KHZ
+    AIC23_REG8_96KHZ
+    </code>
+      </section>
+      <section id="id1170412081208">
+        <title>Signal Processing Function</title>
+        <para id="id1170420560007">The main part of the software is an infinite loop inside the function <code display="inline">processing()</code>. The loop within the function is shown here.</para>
+        <code id="id1170420756236" display="block">while(1) {
+    /* Reclaim full buffer from the input stream */
+    if ((nmadus = SIO_reclaim(&amp;inStream, (Ptr *)&amp;inbuf, NULL)) &lt; 0) {
+    SYS_abort("Error reclaiming full buffer from the input stream");
+    }
+    
+    /* Reclaim empty buffer from the output stream to be reused */
+    if (SIO_reclaim(&amp;outStream, (Ptr *)&amp;outbuf, NULL) &lt; 0) {
+    SYS_abort("Error reclaiming empty buffer from the output stream");
+    }
+    
+    // Even numbered elements are the left channel (Silver on splitter)
+    // and odd elements are the right channel (Gold on splitter).
+    /* This simply moves each channel from the input to the output. */
+    /* To perform signal processing, put code here */
+    for (i = 0; i &lt; CHANLEN; i++) {
+    outbuf[2*i] = inbuf[2*i];// Left channel (Silver on splitter)
+    outbuf[2*i+1] = inbuf[2*i+1];// Right channel (Gold on splitter)
+    }
+    
+    /* Issue full buffer to the output stream */
+    if (SIO_issue(&amp;outStream, outbuf, nmadus, NULL) != SYS_OK) {
+    SYS_abort("Error issuing full buffer to the output stream");
+    }
+    
+    /* Issue an empty buffer to the input stream */
+    if (SIO_issue(&amp;inStream, inbuf, SIO_bufsize(&amp;inStream), NULL) != SYS_OK) {
+    SYS_abort("Error issuing empty buffer to the input stream");
+    }
+    }
+    </code>
+        <para id="id1170422181014">This loop simply gets buffers to be processed with the <code display="inline">SIO_reclaim</code> commands, processes them, and puts them back with the <code display="inline">SIO_issue</code> commands. In this example the data is simply copied from the input buffer to the output buffer. Since the data comes in as packed left and right channels, the even numbered samples are the left channel and the odd numbered samples are the right channel. So the command that copies the left channel is:</para>
+        <code id="id1170420971187" display="block">outbuf[2*i] = inbuf[2*i];// Left channel (Silver on splitter)
+    </code>
+        <para id="id1170421082014">Suppose you wanted to change the function so that the algorithm just amplifies the left input by a factor of 2. Then the program would simply be changed to:</para>
+        <code id="id1170413887031" display="block">outbuf[2*i] = 2*inbuf[2*i];// Left channel (Silver on splitter)
+    </code>
+        <para id="id1170410597572">Notice that there is a <code display="inline">for</code> loop within the infinite loop. The loop is executed <code display="inline">CHANLEN</code> times. In the example code, <code display="inline">CHANLEN</code> is 256. So the block of data is 256 samples from the left channel and 256 samples from the right channel. When writing your programs use the variable <code display="inline">CHANLEN</code> to determine how much data to process.</para>
+      </section>
+      <section id="id1170415398941">
+        <title>Buffer Sizes</title>
+        <para id="id1170421903474">In the program file is a macro that is used to define the size of the buffers that are in the <code display="inline">inStream</code> and <code display="inline">outStream</code> buffers. The macro is</para>
+        <code id="id1170421043136" display="block">#define CHANLEN 256 // Number of samples per channel
+    </code>
+        <para id="id1170422186256">The CCS project uses TI's device drivers described in SPRA846. In the TI document SPRA846 it states that "If buffers are placed in external memory for use with this device driver they should be aligned to a 128 bytes boundary. In addition the buffers should be of a size multiple of 128 bytes as well for the cache to work optimally." If the SIO streams <code display="inline">inStream</code> and <code display="inline">outStream</code> are in external memory then the buffer sizes need to adhere to this requirement. If the streams are placed in internal memory then they can be any size desired as long as there is enough memory.</para>
+        <para id="id1170421002017">Suppose you want to keep the buffers in external memory but change the size. As an example, you want to change the length of each channel to 512 (multiple of 128). Then change <code display="inline">CHANLEN</code> to 512 and then open the configuration file <code display="inline">DSK6713_audio.tcf</code> and examine the properties for <code display="inline">inStream</code>.</para>
+        <figure id="id1170410654572">
+          <media id="id1170410654572_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics4-260e.png" id="id1170410654572__onlineimage" height="546" width="650"/>
+          </media>
+          <caption>DSP/BIOS SIO object inStream properties</caption>
+        </figure>
+        <para id="id1170411079513">Notice that the buffer size is 1024. This was for a channel length of 256. In the C6713 a Minimum Addressable Data Unit (MADU) is an 8-bit byte. The buffer size is in MADUs. Since each sample from the codec is 16-bits (2 MADUs) and there is a right channel and a left channel, the channel length is multiplied by 4 to get the total buffer size needed in MADUs. 256*4 = 1024. If you want to change the channel length to 512 then the buffer size needs to be 512*4 = 2048. Simply change the buffer size entry to 2048. Leave the alignment on 128. The same change must be made to the <code display="inline">outStream</code> object so that the buffers have the same size so change the buffer size in the properties for the <code display="inline">outStream</code> object also.</para>
+        <para id="id1170410629735">Suppose you have an algorithm that processes a block of data at a time and the buffer size is not a multiple of 128. To make the processing easier, you could make the stream buffer sizes the size you need for your algorithm. In this case, the stream objects must be placed in internal memory. As an example suppose you want a channel length of 94. Set the <code display="inline">CHANLEN</code> macro to 94 and then open the configuration file <code display="inline">DSK6713_audio.tcf</code> and examine and modify the properties for <code display="inline">inStream</code> and <code display="inline">outStream</code>. The buffer size will now be 94*4 = 376 and the buffer memory segment must be change from external RAM (SDRAM) to the internal RAM (IRAM).</para>
+        <figure id="id1170421124581">
+          <media id="id1170421124581_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics5-0b70.png" id="id1170421124581__onlineimage" height="548" width="650"/>
+          </media>
+          <caption>DSP/BIOS SIO object inStream properties showing IRAM</caption>
+        </figure>
+      </section>
+    </section>
+    <section id="id1170410619374">
+      <title>Chip Support Library</title>
+      <para id="id1170411790928">CCS v3.3 comes with the chip support library (CSL). If for some reason you don't have it or it needs to be updated, download it from the TI website and install it.</para>
+    </section>
+    <section id="id1170420940415">
+      <title>Project Setup</title>
+      <section id="id1170420641111">
+        <title>Make an empty DSP/BIOS project</title>
+        <para id="id1170421162562">To create a CCS project select <emphasis>Project-&gt;New…</emphasis>. This will bring up a window where you can enter the name of the project. The location selected is the default location for project files. Note that it is in the install directory for CCS v3.3. Select the Target type as <emphasis>TMS320C67xx</emphasis>. Press <emphasis>Finish</emphasis>. </para>
+        <para id="id1170420854570">
+          <figure id="id1170420613016">
+            <media id="id1170420613016_media" alt="">
+              <image mime-type="image/png" src="../../media/graphics6-3b89.png" id="id1170420613016__onlineimage" height="272" width="459"/>
+            </media>
+            <caption>CCS Project name and location</caption>
+          </figure>
+        </para>
+        <para id="id1170420905905">Copy files from the zip file to project directory. When they are copied to the project directory the files need to be added to the project. Right click on the project name and select <emphasis>Add Files To Project…</emphasis>. There should be 4 files added to the project as well as a header file and a couple of automatically generated files.</para>
+        <figure id="id1170422038582">
+          <media id="id1170422038582_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics7-fcbc.png" id="id1170422038582__onlineimage" height="476" width="341"/>
+          </media>
+          <caption>Project view after adding files</caption>
+        </figure>
+      </section>
+      <section id="id1170410910537">
+        <title>Set up the CSL</title>
+        <para id="id1170410632416">Some options in the project need to be changed in order to use the CSL. To get to the project properties select <emphasis>Project-&gt;Build Options</emphasis>. Under Preprocessor enter the chip that we are using, in this case <emphasis>CHIP_6713</emphasis>.</para>
+        <figure id="id1170420981787">
+          <media id="id1170420981787_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics8-e554.png" id="id1170420981787__onlineimage" height="505" width="445"/>
+          </media>
+          <caption>Preprocessor setting for CSL</caption>
+        </figure>
+        <para id="id1170420993332">The library file for the CSL also needs to be added to the project. Right click on the project or where it says Libraries and search for the CSL library file named <code display="inline">csl6713.lib</code>. It should be located in the directory <code display="inline">C:\CCStudio_v3.3\C6000\csl\lib</code>.</para>
+      </section>
+      <section id="id1170420651839">
+        <title>Add Command File</title>
+        <para id="id1170410877389">The configuration file, <code display="inline">DSK6713_audio.tcf</code>, generates several files, one of them being a command file titled <code display="inline">DSK6713_audio.cmd</code>. Add this file to the project. If it is not there, you may need to attempt to build the project so that the file gets generated.</para>
+      </section>
+    </section>
+    <section id="id1170421013852">
+      <title>Using CCS with the DSK</title>
+      <section id="id1170410594611">
+        <title>Startup CCS with DSK connected to PC</title>
+        <para id="id1170420690280">After installing CCS v3.3 the C6713 DSK drivers need to be installed also. If they are not already installed then download them from Spectrum Digital, manufacturer of the DSK, or install them from the install disk that comes with the DSK.</para>
+        <para id="id1170420572193">Add power to the DSK board and then plug the USB connector into the PC you are using. Start up CCS. As the splash screen comes, under Windows XP, there should be a little window that pops up in the bottom right corner of the screen.</para>
+        <figure id="id1170421982992">
+          <media id="id1170421982992_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics9-f6e1.png" id="id1170421982992__onlineimage" height="165" width="292"/>
+          </media>
+          <caption>Popup window when CCS starts and DSK is connected</caption>
+        </figure>
+      </section>
+    </section>
+    <section id="id1170415289846">
+      <title>Connect to target</title>
+      <para id="id1170420932629">CCS v3.3 must first be connected to the target before the executable can be loaded onto the board. Select <emphasis>Debug-&gt;Connect</emphasis>. This will cause CCS to connect to the board and the board status should be in the lower left corner of the CCS window.</para>
+      <figure id="id1170421065656">
+        <media id="id1170421065656_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics10-5edf.png" id="id1170421065656__onlineimage" height="214" width="373"/>
+        </media>
+        <caption>Target status</caption>
+      </figure>
+    </section>
+    <section id="id1170412086575">
+      <title>Debug/test the project</title>
+      <para id="id1170422014284">In order to debug and run the program you need to build it and then load it onto the DSK board. To build the project, click the Incremental Build button.</para>
+      <figure id="id1170415466031">
+        <media id="id1170415466031_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics11-07da.png" id="id1170415466031__onlineimage" height="33" width="39"/>
+        </media>
+        <caption>Incremental Build button</caption>
+      </figure>
+      <para id="id1170412066887">After the project builds successfully, load the <code display="inline">.out</code> file to the DSK board but selecting <emphasis>File-&gt;Load Program...</emphasis> and selecting the file. Or, if you want it loaded automatically, select <emphasis>Options-</emphasis><emphasis>&gt;Customize</emphasis> and then on the <emphasis>Project/Program/CIO</emphasis> tab select the checkmark next to <emphasis>Load Program After Build</emphasis>. When you load the program you will see a status window like the following figure.</para>
+      <figure id="id1170421174056">
+        <media id="id1170421174056_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics12-05d2.png" id="id1170421174056__onlineimage" height="194" width="387"/>
+        </media>
+        <caption>Load Program status window</caption>
+      </figure>
+      <para id="id1170410590002">Once the program is loaded it is ready to be used. The following figure shows the final project with the main program file.</para>
+      <figure id="id1170410620876">
+        <media id="id1170410620876_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics13-7b33.png" id="id1170410620876__onlineimage" height="431" width="650"/>
+        </media>
+        <caption>Final project view</caption>
+      </figure>
+    </section>
+  </content>
+</document>

@@ -1,0 +1,177 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Code Composer Studio v4 C Project</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36322</md:content-id>
+  <md:title>Code Composer Studio v4 C Project</md:title>
+  <md:abstract>Create a Code Composer Studio v4 C project.</md:abstract>
+  <md:uuid>74567471-1ba6-4cd3-b106-0ef176e30869</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1172040541476">
+      <title>Introduction</title>
+      <para id="id1172039129110">This module describes how to create a Code Composer Studio (CCS) project that executes a simple C program. The project does not use DSP/BIOS and runs on the CCS simulator. The code will be a simple "hello world" program. In this project the processor used is the TMS320C67xx but the process works for other processors as well.</para>
+    </section>
+    <section id="id1172039270952">
+      <title>Create a CCS project</title>
+      <para id="id1172039392079">To create a CCS project select <emphasis>File-&gt;New-&gt;CCS Project</emphasis>. </para>
+      <figure id="id1172040670885">
+        <media id="id1172040670885_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics1-e784.png" id="id1172040670885__onlineimage" height="281" width="600"/>
+        </media>
+        <caption>Screenshot of CCS Project menu</caption>
+      </figure>
+      <para id="id1172039175038">This will bring up a window where you can enter the name of the project. The location selected is the default location for project files. Press <emphasis>Next</emphasis>. </para>
+      <para id="id1172043497042">
+        <figure id="id1172039362405">
+          <media id="id1172039362405_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics2-1d65.png" id="id1172039362405__onlineimage" height="450" width="547"/>
+          </media>
+          <caption>CCS Project name and location</caption>
+        </figure>
+      </para>
+      <para id="id1172039266925">Since the example uses the TMS320C67xx processor the project type selected is <emphasis>C6000</emphasis>. The project configurations are <emphasis>Debug</emphasis> and <emphasis>Release</emphasis>. Select the <emphasis>Next</emphasis> button.</para>
+      <para id="id1172038368949">
+        <figure id="id1172039181932">
+          <media id="id1172039181932_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics3-94ba.png" id="id1172039181932__onlineimage" height="445" width="549"/>
+          </media>
+          <caption>Type of CCS project</caption>
+        </figure>
+      </para>
+      <para id="id1172040706354">If there are any project dependencies they are selected on the next screen. Select the <emphasis>Next</emphasis> button.</para>
+      <para id="id1172038818313">
+        <figure id="id1172038915225">
+          <media id="id1172038915225_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics4-c4bd.png" id="id1172038915225__onlineimage" height="444" width="545"/>
+          </media>
+          <caption>CCS Project dependencies</caption>
+        </figure>
+      </para>
+      <para id="id1172039374993">On the <emphasis>Project Settings Screen</emphasis>, select the items that pertain to the type of project to be created. Since the project will be executed select <emphasis>Output Type: Executable</emphasis>. The processor type is TMS320C67xx so the <emphasis>Device Variant</emphasis> is <emphasis>Generic C67xx Device</emphasis>. This project will use <emphasis>Little Endian</emphasis>. The code generation tools are the latest version (in this case TI v7.0.3). The runtime support library is selected to match the device variant and the endianness selected. The library can be selected automatically. Press <emphasis>Next</emphasis>.</para>
+      <para id="id1172038751143">
+        <figure id="id1172039386437">
+          <media id="id1172039386437_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics5-258f.png" id="id1172039386437__onlineimage" height="466" width="479"/>
+          </media>
+          <caption>CCS project settings</caption>
+        </figure>
+      </para>
+      <para id="id1172038945154">Since this project will be a simple C program project, select either the <emphasis>Empty Project</emphasis> or the <emphasis>Hello World</emphasis> example.</para>
+      <para id="id1172039480129">
+        <figure id="id1172040215608">
+          <media id="id1172040215608_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics6-0206.png" id="id1172040215608__onlineimage" height="471" width="585"/>
+          </media>
+        </figure>
+      </para>
+      <para id="id1172040613186">After the projects settings have been set, select <emphasis>Finish</emphasis> and the project will show up in the <emphasis>C/C++ Projects</emphasis> view.</para>
+      <figure id="id1172039406562">
+        <media id="id1172039406562_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics7-ffff.png" id="id1172039406562__onlineimage" height="185" width="297"/>
+        </media>
+        <caption>C/C++ projects view</caption>
+      </figure>
+    </section>
+    <section id="id1172040034369">
+      <title>Add code files</title>
+      <para id="id1172040638594">Projects in CCS must have a <code display="inline">main</code> function. This function gets executed first by default. So create a program file that contains a <code display="inline">main</code> function. Select <emphasis>File-&gt;New-&gt;Source File</emphasis>.</para>
+      <para id="id1172040065120">
+        <figure id="id1172039291047">
+          <media id="id1172039291047_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics8-df5b.png" id="id1172039291047__onlineimage" height="277" width="600"/>
+          </media>
+          <caption>New source file</caption>
+        </figure>
+      </para>
+      <para id="id1172054060209">The <emphasis>New Source File</emphasis> dialog opens and you can enter the source file name. Add a <emphasis>.c</emphasis> extension for a C program file. The source folder should be the folder of your project. Select <emphasis>Finish</emphasis> and a new file is opened.</para>
+      <figure id="id1172038913717">
+        <media id="id1172038913717_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics9-72b8.png" id="id1172038913717__onlineimage" height="448" width="549"/>
+        </media>
+        <caption>New source file dialog</caption>
+      </figure>
+      <para id="id1172040829693">Enter the C code. The file must contain a <emphasis>main</emphasis> function. After entering the code, save the file.</para>
+      <para id="id1172040655787">
+        <figure id="id1172041138444">
+          <media id="id1172041138444_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics10-b5ca.png" id="id1172041138444__onlineimage" height="130" width="325"/>
+          </media>
+          <caption>Code in main.c</caption>
+        </figure>
+      </para>
+    </section>
+    <section id="id1172038730158">
+      <title>Create a target configuration</title>
+      <para id="id1172040763854">In order to build and run your project you need to have a target configuration. This file will contain information about the emulator that will be used and the target processor. In this module the target configuration will be the TI simulator for the C6713 processor.</para>
+      <para id="id1172039196475">First select <emphasis>File-&gt;New-&gt;Target Configuration File</emphasis>. </para>
+      <figure id="id1172039227217">
+        <media id="id1172039227217_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics11-ad7a.png" id="id1172039227217__onlineimage" height="277" width="600"/>
+        </media>
+        <caption>Open new target configuration file</caption>
+      </figure>
+      <para id="id1172040645934">In the New Target Configuration dialog enter the configuration file name ending in the <emphasis>.ccxml</emphasis> file extension. Put the file in the project directory. Select <emphasis>Finish</emphasis> and a new target configuration file opens.</para>
+      <figure id="id1172040569701">
+        <media id="id1172040569701_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics12-e9a2.png" id="id1172040569701__onlineimage" height="225" width="551"/>
+        </media>
+        <caption>Target configuration dialog</caption>
+      </figure>
+      <para id="id1172040815155">In the configuration, select the connection needed (simulator or some type of emulator, etc.) and the type of device. In this example the TI simulator is used with the C6713 little endian simulator device. Select <emphasis>Save</emphasis> when done.</para>
+      <figure id="id1172041120247">
+        <media id="id1172041120247_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics13-30c6.png" id="id1172041120247__onlineimage" height="381" width="599"/>
+        </media>
+        <caption>Target configuration setup</caption>
+      </figure>
+      <para id="id1172039186664">Now the target configuration is in the project.</para>
+      <figure id="id1172040682762">
+        <media id="id1172040682762_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics14.png" id="id1172040682762__onlineimage" height="231" width="291"/>
+        </media>
+        <caption>Project files</caption>
+      </figure>
+    </section>
+    <section id="id1172038873673">
+      <title>Debug the project</title>
+      <para id="id1172040535483">The default project settings do not have the stack and heap sizes defined. This will produce warnings when building the project. To change the project properties, select <emphasis>Project-&gt;Properties</emphasis> and then click on <emphasis>C/C++ Build</emphasis> on the left and the <emphasis>C6000 Linker/Basic Options</emphasis> under <emphasis>Tool Settings</emphasis>. For the stack size and heap size enter 0x400 and click <emphasis>OK</emphasis>.</para>
+      <para id="id1172038742943">
+        <figure id="id1172049157311">
+          <media id="id1172049157311_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics15.png" id="id1172049157311__onlineimage" height="274" width="600"/>
+          </media>
+          <caption>Setting the stack and heap sizes</caption>
+        </figure>
+      </para>
+      <para id="id1172038804961">To start a debug session either select <emphasis>Target-&gt;Debug Active Project</emphasis> or press the debug icon in the menu bar.</para>
+      <figure id="id1172041136182">
+        <media id="id1172041136182_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics16.png" id="id1172041136182__onlineimage" height="38" width="75"/>
+        </media>
+        <caption>Debug icon</caption>
+      </figure>
+      <para id="id1172040635817">When the debug session starts the code files are compiled and linked into an executable file and the file is loaded onto the target. The initialization code is executed and the program is halted at the beginning of the <code display="inline">main</code> function.</para>
+      <figure id="id1172040114484">
+        <media id="id1172040114484_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics17.png" id="id1172040114484__onlineimage" height="147" width="371"/>
+        </media>
+        <caption>Debugging session</caption>
+      </figure>
+      <para id="id1172040061513">Icons on the debug window can be used to run the program and other debugging tools.</para>
+      <figure id="id1172039362993">
+        <media id="id1172039362993_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics18.png" id="id1172039362993__onlineimage" height="33" width="358"/>
+        </media>
+        <caption>Debugging tools</caption>
+      </figure>
+      <para id="id1172043150114">Press the green arrow to run the program. The <code display="inline">main</code> function will be executed and the program will leave the <code display="inline">main</code> function. In the program the printf function prints to the console which if not shown by default can be viewed by selecting <emphasis>View-&gt;Console</emphasis>. In the console is shown the "hello world" that was printed.</para>
+      <figure id="id1172039455107">
+        <media id="id1172039455107_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics19.png" id="id1172039455107__onlineimage" height="76" width="599"/>
+        </media>
+        <caption>Console output of the program</caption>
+      </figure>
+    </section>
+  </content>
+</document>

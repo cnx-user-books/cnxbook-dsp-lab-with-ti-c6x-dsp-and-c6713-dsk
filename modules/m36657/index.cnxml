@@ -1,0 +1,114 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Echo Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36657</md:content-id>
+  <md:title>Echo Lab</md:title>
+  <md:abstract>This module is a laboratory assignment to implement an echo function.</md:abstract>
+  <md:uuid>57218615-e916-4afa-956b-b084ed2eea25</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1164145198854">
+      <title>Introduction</title>
+      <para id="id1164157797125">In this laboratory you will use a program that gathers data from an A/D converter, processes the data, and outputs to a D/A converter. The signal processing portion will be added by you to perform an echo function. After this laboratory you should:</para>
+      <list id="id1164148904259" list-type="bulleted">
+        <item>Understand how data is received from an A/D converter and sent to a D/A converter</item>
+        <item>Understand how signal processing is done in "real-time"</item>
+        <item>Be able to implement a simple signal processing algorithm using "block processing" techniques</item>
+      </list>
+    </section>
+    <section id="id1164138409223">
+      <title>Laboratory Assignment</title>
+      <para id="id1164165566712">In the laboratory you will be making a delay function or an echo. To make an echo you will need to delay the data that is coming into the DSP. This is usually accomplished using a buffer that is used to store previous input values. Use a circular buffer to store the input data. The length of the buffer is determined by </para>
+      <equation id="id1164148491890">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+          <m:semantics>
+            <m:mrow>
+              <m:mstyle fontsize="12pt">
+                <m:mrow>
+                  <m:mrow>
+                    <m:mi>N</m:mi>
+                    <m:mo stretchy="false">=</m:mo>
+                    <m:mrow>
+                      <m:mstyle fontstyle="italic">
+                        <m:mrow>
+                          <m:mtext>Delay</m:mtext>
+                        </m:mrow>
+                      </m:mstyle>
+                      <m:mo stretchy="false">⋅</m:mo>
+                      <m:mstyle fontstyle="italic">
+                        <m:mrow>
+                          <m:mtext>SampleRate</m:mtext>
+                        </m:mrow>
+                      </m:mstyle>
+                    </m:mrow>
+                  </m:mrow>
+                </m:mrow>
+              </m:mstyle>
+              <m:mrow/>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0"> size 12{N= ital "Delay" cdot  ital "SampleRate"} {}</m:annotation>
+          </m:semantics>
+        </m:math>
+      </equation>
+      <para id="id1164143218110">In order to implement the delay an array of sufficient size must be defined. When a function is called, the local variables will go onto the stack. The stack is usually small compared to other memory sections. Therefore, the number of local variables for a function is limited. Since the array for storing the previous inputs will be large, the array should be stored somewhere else in memory besides on the stack. If the Memory Model in the build options is set to <code display="inline">Far Aggregate</code> then the global variables and the local static variables will be put into the <code display="inline">.far</code> section. This section can be set to the large external memory. Therefore, the array that stores the delay values should be defined as either a <emphasis>global or static local variable</emphasis>. A static local variable is a variable that is not initialized each time a function is called. The static variable will retain the value it had the last time the function was called. To make a static variable just use the static keyword in front of the variable definition.</para>
+      <code id="id1164163034370" display="block">static int static_var, static_array[10];
+    </code>
+      <para id="id1164156642176">You need to make sure the <code display="inline">.far</code> section is set to a large memory section. For our project, set it to the SDRAM memory. To change the location of the <code display="inline">.far</code> section in the project you should:</para>
+      <list id="id1164152482651" list-type="bulleted">
+        <item>Open the project <code display="inline">DSK6713_audio.pjt</code></item>
+        <item>Open the configuration file <code display="inline">DSK6713_audio.tcf</code></item>
+        <item>Right click on System-&gt;MEM and open Properties</item>
+        <item>Click on the Compiler Sections tab</item>
+        <item>On the pull down menu next to the <code display="inline">.far</code> section select <code display="inline">SDRAM</code></item>
+      </list>
+    </section>
+    <section id="id2202307">
+      <title>Pre-Laboratory</title>
+      <list id="id1164157652534" list-type="bulleted">
+        <item>If your sample rate is 8000 Hz and you want a delay of 1/2 second, how long should your delay buffer be?</item>
+        <item>The main loop in the default I/O program simply inputs a block of data and then outputs a block of data. You need to modify the main loop so that it will take an input sample, store it in the circular buffer and output the sample that is delayed by 1/2 second. Your code should implement a <emphasis effect="underline">circular buffer</emphasis>. Also, make sure you initialize the buffer with zeros so that you won't output whatever happens to be in the memory.</item>
+        <item>What is the transfer function, H(z), of the system in the following figure? What is the difference equation? What would happen if you set the feedback gain to a value greater than 1?</item>
+        <item>Write another program that will implement a fading echo shown in following figure. The output of the delay is fed back to the input of the delay and added to the input.</item>
+        <item>
+          <figure id="id1164144425753">
+            <media id="id1164144425753_media" alt="">
+              <image mime-type="image/png" src="../../media/graphics1-8ad9.png" id="id1164144425753__onlineimage" height="158" width="388"/>
+            </media>
+          </figure>
+        </item>
+      </list>
+    </section>
+    <section id="id1164144284580">
+      <title>Laboratory</title>
+      <section id="id1164133312166">
+        <title>Part 1</title>
+        <list id="id1164137905253" list-type="bulleted">
+          <item>In this part you will just get the template project working that simply outputs whatever was input.</item>
+          <item>Open the project <code display="inline">DSK6713_audio.pjt</code>.</item>
+          <item>Change the parameters in the <code display="inline">DSK6713_audio.c</code> file so that the sampling rate is 8000 Hz and the input is from the microphone.</item>
+          <item>Connect a microphone to the DSK board microphone input and the speakers to the line out.</item>
+          <item>Build, load and run the project.</item>
+          <item>Verify that as you speak into the microphone you hear yourself on the speakers.</item>
+        </list>
+      </section>
+      <section id="id1164133063035">
+        <title>Part 2</title>
+        <list id="id1164146766437" list-type="bulleted">
+          <item>Modify the program <code display="inline">DSK6713_audio.c</code> so that one channel of output is delayed by 1/2 second. Make sure to define your stored samples array as a global or static array in external memory.</item>
+          <item>Build, load and run the project.</item>
+          <item>Demonstrate that you get a 1/2 second delay in the output.</item>
+        </list>
+      </section>
+      <section id="id1164149787432">
+        <title>Part 3</title>
+        <list id="id1164134644131" list-type="bulleted">
+          <item>Modify the program <code display="inline">DSK6713_audio.c</code> to implement the fading echo.</item>
+          <item>Build, load and run the project.</item>
+          <item>Demonstrate that you get a 1/2 second delay in the output.</item>
+          <item>What would happen if you set the feedback gain to a value greater that 1?</item>
+        </list>
+      </section>
+    </section>
+  </content>
+</document>

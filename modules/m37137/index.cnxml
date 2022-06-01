@@ -1,0 +1,82 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>FIR Filter Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m37137</md:content-id>
+  <md:title>FIR Filter Lab</md:title>
+  <md:abstract>This module is the OC FIR filter lab.</md:abstract>
+  <md:uuid>49be0257-a2f6-4862-a1ca-a2aec2a575da</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1164850592941">
+      <title>Introduction</title>
+      <para id="id1164866537797">This module is a lab assignment for implementing an FIR filter using a circular buffer.</para>
+    </section>
+    <section id="id1164845022960">
+      <title>Reading</title>
+      <list id="id1164864937696" list-type="bulleted">
+        <item>For a description of FIR Direct-Form structures see the module <link document="m11918">FIR Filter Structures</link>.</item>
+        <item>For a description of circular buffers see <link document="m36654">Circular Buffers</link>.</item>
+        <item><link document="m37136">FIR Filter Implementation</link>.</item>
+      </list>
+    </section>
+    <section id="id1164852471148">
+      <title>Filter Implementation</title>
+      <para id="id1164862315207">In this lab you will be writing a function <code display="inline">fir_filt</code> that will take as its input one new sample and produce one output sample. The <code display="inline">fir_filt</code> function will have the following basic structure:</para>
+      <para id="id1164844834737">
+        <code display="inline">Store the input value in a circular buffer</code>
+      </para>
+      <para id="id1164850384871">
+        <code display="inline">Compute the new output value</code>
+      </para>
+      <para id="id2766815">
+        <code display="inline">Return the new output value</code>
+      </para>
+      <para id="id1164844972346">
+        <code display="inline">Store the coefficients in in a header file</code>
+      </para>
+      <para id="id8347298">Here are some tips for writing the function.</para>
+      <list id="id1164861862668" list-type="bulleted">
+        <item>Store the coefficients as <code display="inline">float</code> values.</item>
+        <item>Store the input as <code display="inline">Int16</code> values (use a global variable or a local static variable). This is not very good programming practice but we will do it to simplify the processing.</item>
+        <item>The intermediate sum in the filter calculation should be stored in a float variable initialized to 0.0.</item>
+        <item>Be sure to cast the output <code display="inline">float</code> variable to an <code display="inline">Int16</code> before output. e.g. <code display="inline">return (Int16) var;</code></item>
+        <item>When calling the function use a statement like <code display="inline">outbuf[2*i] = fir_filt(inbuf[2*i]);</code></item>
+      </list>
+    </section>
+    <section id="id1164853433556">
+      <title>Pre-Laboratory</title>
+      <list id="id1164845496248" list-type="bulleted">
+        <item>Design a Bandpass FIR filter with the following requirements:</item>
+      </list>
+      <list id="id1164867268247" list-type="enumerated" number-style="arabic"><item>Bandpass</item>
+        <item>Stopband attenuations: 40 dB</item>
+        <item>Passband: 1300Hz to 2000 Hz</item>
+        <item>Transition widths: 600 Hz</item>
+        <item>Sample rate: 8000 samples/sec.</item>
+        <item>DO NOT USE BUILT IN FUNCTIONS IN MATLAB for filter designs. You can use functions like <code display="inline">window</code> and <code display="inline">sinc</code>.</item>
+      </list><list id="id1164842915090" list-type="bulleted">
+        <item>For the filter design, your prelab report should include a plot of the filter coefficients and the magnitude and phase plots of the filter spectrum with non-normalized Hz as the x-axis.</item>
+        <item>Save the coefficients to an ASCII data file to be used in your C function below. It would be advantageous to have this completely automated so that you could simply change the bandpass region and output all of the above for a new frequency range (in MATLAB see <code display="inline">fopen</code>, <code display="inline">fprintf</code>, <code display="inline">fclose</code>). Your header file should have the coefficients in an array, be saved in a format like this: <code display="inline">3.007445391758509e-003</code> and be data type <code display="inline">float</code>.</item>
+        <item>Write a C function called <code display="inline">fir_filt</code> that takes as its input one input time point and outputs one filtered time point. Use the coefficients designed above. Use a circular buffer to store the saved values of the input.</item>
+        <item>Write a program that filters one channel of the CODEC input and zeros the other channel. The data should be filtered with the function <code display="inline">fir_filt</code>.</item>
+        <item>Your function <code display="inline">fir_filt</code> should be located in a separate file from you main program. Also, create a header file to contain the declaration of your function <code display="inline">fir_filt</code>.</item>
+        <item>Your files should be organized something like this:</item>
+      </list>
+      <list id="id1164853498623" list-type="enumerated" number-style="arabic">
+        <item><code display="inline">DSK6713_audio.c</code> - contains your main code for sending and receiving data and filtering the signal.</item>
+        <item><code display="inline">bpf.h</code> - contains your filter coefficients and a macro definition for the length of your filter (e.g. <code display="inline">#define N 70</code>). This file will be included in <code display="inline">fir_filt.c</code>.</item>
+        <item><code display="inline">fir_filt.c</code> - contains your FIR filter function called <code display="inline">fir_filt</code>.</item>
+        <item><code display="inline">fir_filt.h</code> - contains the declaration of your FIR filter <code display="inline">fir_filt</code>. This will be included in the <code display="inline">DSK6713_audio.c</code> file.</item>
+      </list>
+    </section>
+    <section id="id1164853044239">
+      <title>Laboratory</title>
+      <list id="id1164847220939" list-type="bulleted">
+        <item>Run the program on the DSK and demonstrate the filtered channel. When you build the project you may need to have the -o3 option selected. This will help optimize the code. If you are debugging the code you will need to set this back to None since the optimized code does not work well in debugging.</item>
+        <item>Use an input sinusoid and measure the amplitude of the output at different frequencies to test the frequency response. You could use a spectrum analyzer to get a power spectral density of your filter or you could use your laptop to analyze the system.</item>
+        <item>You should verify your spectrum that you determined in your pre-lab work. <emphasis effect="underline">Use a good experimental write-up for this lab</emphasis>.</item>
+      </list>
+    </section>
+  </content>
+</document>
